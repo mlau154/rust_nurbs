@@ -203,7 +203,7 @@ fn cox_de_boor(k: &[f64], possible_span_indices: &[usize], degree: usize, i: usi
 fn bspline_curve_eval(p: Vec<Vec<f64>>, k: Vec<f64>, t: f64) -> PyResult<Vec<f64>> {
     let n = p.len() - 1;  // Number of control points minus 1
     let num_knots = k.len();
-    let q = num_knots - num_cps - 1;  // B-spline degree
+    let q = num_knots - n - 2;  // B-spline degree
     let possible_span_indices: Vec<usize> = get_possible_span_indices(&k);
     let dim = p[0].len();
     let mut evaluated_point: Vec<f64> = vec![0.0; dim];
@@ -218,19 +218,19 @@ fn bspline_curve_eval(p: Vec<Vec<f64>>, k: Vec<f64>, t: f64) -> PyResult<Vec<f64
 
 #[pyfunction]
 fn bspline_surf_eval(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64, v: f64) -> PyResult<Vec<f64>> {
-    let m = p.len() - 1;  // Number of control points in the u-direction minus 1
-    let n = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
     let num_knots_u = ku.len();  // Number of knots in the u-direction
     let num_knots_v = kv.len();  // Number of knots in the v-direction
-    let q = num_knots_u - num_cps_u - 1;  // Degree in the u-direction
-    let r = num_knots_v - num_cps_v - 1;  // Degree in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
     let possible_span_indices_u = get_possible_span_indices(&ku);
     let possible_span_indices_v = get_possible_span_indices(&kv);
     let dim = p[0][0].len();  // Number of spatial dimensions
     let mut evaluated_point: Vec<f64> = vec![0.0; dim];
     for i in 0..n+1 {
         let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
-        for j in 0..m=1 {
+        for j in 0..m+1 {
             let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
             let bspline_basis_prod = bspline_basis_u * bspline_basis_v;
             for k in 0..dim {
@@ -244,12 +244,12 @@ fn bspline_surf_eval(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64, 
 #[pyfunction]
 fn bspline_surf_eval_grid(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>,
     nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
-    let m = p.len() - 1;  // Number of control points in the u-direction minus 1
-    let n = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
     let num_knots_u = ku.len();  // Number of knots in the u-direction
     let num_knots_v = kv.len();  // Number of knots in the v-direction
-    let q = num_knots_u - num_cps_u - 1;  // Degree in the u-direction
-    let r = num_knots_v - num_cps_v - 1;  // Degree in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
     let possible_span_indices_u = get_possible_span_indices(&ku);
     let possible_span_indices_v = get_possible_span_indices(&kv);
     let dim = p[0][0].len();  // Number of spatial dimensions
@@ -277,7 +277,7 @@ fn bspline_surf_eval_grid(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>,
 fn nurbs_curve_eval(p: Vec<Vec<f64>>, w: Vec<f64>, k: Vec<f64>, t: f64) -> PyResult<Vec<f64>> {
     let n = p.len() - 1;  // Number of control points minus 1
     let num_knots = k.len();
-    let q = num_knots - num_cps - 1;
+    let q = num_knots - n - 2;
     let possible_span_indices: Vec<usize> = get_possible_span_indices(&k);
     let dim = p[0].len();
     let mut evaluated_point: Vec<f64> = vec![0.0; dim];
@@ -298,12 +298,12 @@ fn nurbs_curve_eval(p: Vec<Vec<f64>>, w: Vec<f64>, k: Vec<f64>, t: f64) -> PyRes
 #[pyfunction]
 fn nurbs_surf_eval(p: Vec<Vec<Vec<f64>>>, w: Vec<Vec<f64>>,
     ku: Vec<f64>, kv: Vec<f64>, u: f64, v: f64) -> PyResult<Vec<f64>> {
-    let m = p.len() - 1;  // Number of control points in the u-direction minus 1
-    let n = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
     let num_knots_u = ku.len();  // Number of knots in the u-direction
     let num_knots_v = kv.len();  // Number of knots in the v-direction
-    let q = num_knots_u - num_cps_u - 1;  // Degree in the u-direction
-    let r = num_knots_v - num_cps_v - 1;  // Degree in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
     let possible_span_indices_u = get_possible_span_indices(&ku);
     let possible_span_indices_v = get_possible_span_indices(&kv);
     let dim = p[0][0].len();  // Number of spatial dimensions
@@ -329,12 +329,12 @@ fn nurbs_surf_eval(p: Vec<Vec<Vec<f64>>>, w: Vec<Vec<f64>>,
 #[pyfunction]
 fn nurbs_surf_eval_grid(p: Vec<Vec<Vec<f64>>>, w: Vec<Vec<f64>>,
     ku: Vec<f64>, kv: Vec<f64>, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
-    let m = p.len() - 1;  // Number of control points in the u-direction minus 1
-    let n = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
     let num_knots_u = ku.len();  // Number of knots in the u-direction
     let num_knots_v = kv.len();  // Number of knots in the v-direction
-    let q = num_knots_u - num_cps_u - 1;  // Degree in the u-direction
-    let r = num_knots_v - num_cps_v - 1;  // Degree in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
     let possible_span_indices_u = get_possible_span_indices(&ku);
     let possible_span_indices_v = get_possible_span_indices(&kv);
     let dim = p[0][0].len();  // Number of spatial dimensions
