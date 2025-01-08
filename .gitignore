@@ -1,5 +1,7 @@
 /target
 
+docs/source/_build/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 .pytest_cache/
@@ -70,3 +72,6 @@ docs/_build/
 
 # Pyenv
 .python-version
+
+# Cargo
+Cargo.lock
