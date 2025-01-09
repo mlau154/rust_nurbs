@@ -6,7 +6,7 @@ author = 'Matthew G. Lauer'
 
 # Release Information
 release = '0.1'
-version = '0.1.1'
+version = '0.1.2'
 
 # Sphinx Extensions
 extensions = [
