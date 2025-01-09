@@ -1,7 +1,8 @@
 [package]
 name = "rust_nurbs"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
+# IMPORTANT: the version must be kept on line 3 to be read properly in docs/source/conf.py
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
@@ -10,4 +11,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.23.3"
-num-integer = "0.1.46"  # num_integer::binomial used in bernstein_poly
+num-integer = "0.1.46"
+# num_integer::binomial used in bernstein_poly

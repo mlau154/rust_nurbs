@@ -4,7 +4,7 @@
 Installation
 ============
 
-The **rust_nurbs** library can be installed using either of the following methods:
+The **rust_nurbs** library can be installed any of the following methods:
 
 .. tab-set::
 
@@ -12,7 +12,7 @@ The **rust_nurbs** library can be installed using either of the following method
 
         .. code-block:: shell
 
-            pip install rust_nurbs
+            pip install rust-nurbs
     
     .. tab-item:: Latest
 
@@ -20,10 +20,22 @@ The **rust_nurbs** library can be installed using either of the following method
 
             git clone https://github.com/mlau154/rust_nurbs.git
             cd rust_nurbs
-            pip install .
+            pip install .[build]
+    
+    .. tab-item:: Dev
 
-However, Rust must be installed properly on your machine for the ``pip install`` command to pass. See below to
-see how to ensure this in Windows or Linux
+        .. code-block:: shell
+
+            git clone https://github.com/mlau154/rust_nurbs.git
+            cd rust_nurbs
+            pip install .[dev]
+
+.. important::
+
+    If you do not want ``rust-nurbs`` installed in your default system Python, make sure to first activate a virtual environment!
+
+You may find that the ``Latest`` and ``Dev`` methods of installing **rust_nurbs** fail because Rust/Cargo could not be found on your system. Rust must be installed properly on your machine for these versions of the ``pip install`` command to pass. See below to
+see how to ensure this in Windows or Linux (macOS likely has similar instructions to the Linux case):
 
 .. tab-set::
 
@@ -38,9 +50,9 @@ see how to ensure this in Windows or Linux
 
         #. Install the `MSYS2 toolchain <https://www.msys2.org/>`_.
         #. Add the MSYS2 toolchain to your `system path environment variable <https://www.eukhost.com/kb/how-to-add-to-the-path-on-windows-10-and-windows-11/>`_ (if installed at the default location, the path to the binaries will usually look something like ``C:\msys64\mingw64\bin``)
-        #. Install Rust from the `Rust installation page <https://www.rust-lang.org/learn/get-started>`_
+        #. Install Rust from the `Rust installation page <https://www.rust-lang.org/learn/get-started>`_, using the custom installation method and switching to the GNU version of Rust if desired. Alternatively, the default installation can be used and the GNU version can be set as the default in the last step.
         #. Add the Rust toolchain binaries to your system path environment variable (if installed at the default location, the path to the binaries will usually look something like ``C:\Users\<user-name>\.cargo\bin``)
-        #. Now, run the following commands to switch to the GNU version of Rust:
+        #. Now, run the following commands to switch to the GNU version of Rust if you did not already switch in Step 3:
 
         .. code-block:: shell
 

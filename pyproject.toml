@@ -16,7 +16,11 @@ dynamic = ["version"]
 features = ["pyo3/extension-module"]
 
 [project.optional-dependencies]
+build = [
+    "maturin"
+]
 dev = [
+    "maturin", 
     "pytest",
     "numpy>=1.8",
     "tox"

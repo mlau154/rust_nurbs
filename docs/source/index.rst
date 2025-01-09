@@ -1,31 +1,22 @@
 rust_nurbs
 ==========
 
-Welcome to **rust_nurbs**, a Python API for evaluation of Non-Uniform Rational B-Splines (NURBS) curves and surfaces implemented in Rust. The primary goals of this package are to allow for extremely fast NURBS evaluation while providing a user-friendly interface through Python and limiting external dependencies.
+Welcome to **rust_nurbs**, a Python API for evaluation of Non-Uniform Rational B-Splines (NURBS) curves and surfaces implemented in Rust. The primary goals of this package are to allow for extremely fast NURBS evaluation while providing a user-friendly interface through Python with zero external dependencies.
 
-Installation
-------------
+Basic Installation
+------------------
 
 Installation is straightforward using the simple
 
-.. tab-set::
+.. code-block:: shell
 
-    .. tab-item:: Stable
+    pip install rust-nurbs
 
-        .. code-block:: shell
+.. note::
 
-            pip install rust_nurbs
-    
-    .. tab-item:: Latest
+    The command ``pip install rust_nurbs`` also works. This underscore must be used when importing the library inside of Python because a hyphen in an import statement is not valid Python syntax.
 
-        .. code-block:: shell
-
-            git clone https://github.com/mlau154/rust_nurbs.git
-            cd rust_nurbs
-            pip install .
-
-However, Rust must be installed properly on your machine for the ``pip install`` command to pass. See :ref:`install`
-for more details.
+If using the ``Stable`` version, the single ``pip install`` command should work for all major operating versions, CPU architectures, and versions of Python ``>=3.8``. See :ref:`install` for more detailed installation instructions if you have an unsupported architecture or are a developer and would like to extend or develop the library.
 
 Quick Start
 -----------
@@ -52,6 +43,8 @@ If desired, all the functions listed in the :ref:`api` can be dumped to the curr
     ])
     surf_point = np.array(bezier_surf_eval(p, 0.3, 0.8))
 
+See the `test file <https://github.com/mlau154/rust_nurbs/blob/main/tests/test_rust_nurbs.py>`_ for more examples.
+
 Source & API
 ------------
 
@@ -62,33 +55,11 @@ Examples
 
 See the `test file <https://github.com/mlau154/rust_nurbs/blob/main/tests/test_rust_nurbs.py>`_ for example usages of each function.
 
-Developer
----------
-
-To install the development version of **rust_nurbs** which installs the dependencies required to run the tests, use
-
-.. code-block:: shell
-
-    git clone https://github.com/mlau154/rust_nurbs.git
-    cd rust_nurbs
-    pip install .[dev]
-
-To run the tests from a single version of Python, simply run the following command from the root directory of the project (making sure to first activate the Python environment):
-
-.. code-block:: shell
-
-    pytest tests
-
-To ensure that the tests work for all supported Python versions, use this command instead:
-
-.. code-block:: shell
-
-    tox run
-
 Contents
 --------
 
 .. toctree::
 
     install
+    testing
     api
