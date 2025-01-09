@@ -41,6 +41,29 @@ html_css_files = [
 # Logo
 html_logo = "_static/logo.png"
 
+# Custom PyPI logo file
+html_js_files = [
+   "pypi-icon.js"
+]
+
+# Icon links
+html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/mlau154/rust_nurbs",
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome"
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/rust-nurbs/",
+            "icon": "fa-custom fa-pypi",
+            "type": "fontawesome"
+        }
+   ]
+}
+
 # Auto API (reading .pyi files)
 autoapi_type = 'python'
 autoapi_dirs = ['../..']
