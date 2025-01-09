@@ -57,6 +57,11 @@ Source & API
 
 The source code can be viewed on GitHub `here <https://github.com/mlau154/rust_nurbs/blob/main/src/lib.rs>`_. See the :ref:`api` section for a detailed Python API reference.
 
+Examples
+--------
+
+See the `test file <https://github.com/mlau154/rust_nurbs/blob/main/tests/test_rust_nurbs.py>`_ for example usages of each funciton.
+
 Developer
 ---------
 
