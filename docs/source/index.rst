@@ -57,6 +57,28 @@ Source & API
 
 The source code can be viewed on GitHub `here <https://github.com/mlau154/rust_nurbs/blob/main/src/lib.rs>`_. See the :ref:`api` section for a detailed Python API reference.
 
+Developer
+---------
+
+To install the development version of **rust_nurbs** which installs the dependencies required to run the tests, use
+
+.. code-block:: shell
+
+    git clone https://github.com/mlau154/rust_nurbs.git
+    cd rust_nurbs
+    pip install .[dev]
+
+To run the tests from a single version of Python, simply run the following command from the root directory of the project (making sure to first activate the Python environment):
+
+.. code-block:: shell
+
+    pytest tests
+
+To ensure that the tests work for all supported Python versions, use this command instead:
+
+.. code-block:: shell
+
+    tox run
 
 Contents
 --------

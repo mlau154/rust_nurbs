@@ -13,3 +13,10 @@ classifiers = [
 dynamic = ["version"]
 [tool.maturin]
 features = ["pyo3/extension-module"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "numpy>=1.8",
+    "tox"
+]

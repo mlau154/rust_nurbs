@@ -30,6 +30,6 @@ templates_path = ['_templates']
 # Auto API (reading .pyi files)
 autoapi_type = 'python'
 autoapi_dirs = ['../..']
-autoapi_file_patterns = ['*.pyi']
+autoapi_file_patterns = ['rust*.pyi']
 autoapi_ignore = ['*.rst', '*migrations*']
 autoapi_add_toctree_entry = False
