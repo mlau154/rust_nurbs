@@ -60,7 +60,7 @@ The source code can be viewed on GitHub `here <https://github.com/mlau154/rust_n
 Examples
 --------
 
-See the `test file <https://github.com/mlau154/rust_nurbs/blob/main/tests/test_rust_nurbs.py>`_ for example usages of each funciton.
+See the `test file <https://github.com/mlau154/rust_nurbs/blob/main/tests/test_rust_nurbs.py>`_ for example usages of each function.
 
 Developer
 ---------
