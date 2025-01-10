@@ -38,6 +38,58 @@ def test_bezier_curve_eval():
     assert curve_point.shape == (3,)
 
 
+def test_bezier_curve_dCdt():
+    """
+    Evaluates sample 2-D and 3-D Bézier curve first derivatives at a point and ensures
+    that the number of dimensions in the evaluated derivative is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    first_deriv = np.array(bezier_curve_dCdt(p, 0.3))
+    assert first_deriv.shape == (2,)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    first_deriv = np.array(bezier_curve_dCdt(p, 0.1))
+    assert first_deriv.shape == (3,)
+
+
+def test_bezier_curve_d2Cdt2():
+    """
+    Evaluates sample 2-D and 3-D Bézier curve second derivatives at a point and ensures
+    that the number of dimensions in the evaluated derivative is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    second_deriv = np.array(bezier_curve_d2Cdt2(p, 0.3))
+    assert second_deriv.shape == (2,)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    second_deriv = np.array(bezier_curve_d2Cdt2(p, 0.1))
+    assert second_deriv.shape == (3,)
+
+
 def test_bezier_surf_eval():
     """
     Evaluates a 1x3 Bézier surface at a single (u,v) pair 
