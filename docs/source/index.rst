@@ -3,6 +3,47 @@ rust_nurbs
 
 Welcome to **rust_nurbs**, a Python API for evaluation of Non-Uniform Rational B-Splines (NURBS) curves and surfaces implemented in Rust. The primary goals of this package are to allow for extremely fast NURBS evaluation while providing a user-friendly interface through Python with zero external dependencies.
 
+Speed Comparison
+----------------
+
+Performance can be of high importance when evaluating NURBS objects, especially when evaluating many points on surfaces with high degrees. See the below image for a comparison of the performance of this library versus an essentially identical pure-Python implementation.
+
+.. figure:: images/python-rust-speed-comparison.*
+   :width: 500px
+   :align: center
+
+   Comparison of the Rust NURBS implementation vs. a pure-Python implementation for several cases
+
+.. list-table:: Case Description
+    :widths: 20 60 20
+    :header-rows: 1
+
+    * - Case
+      - Description
+      - Samples/Size
+    * - Case 1
+      - Degree 10 Bernstein polynomial evaluation at random :math:`t`-values
+      - 500,000
+    * - Case 2
+      - Degree 4 Bézier curve evaluation at random :math:`t`-values
+      - 500,000
+    * - Case 3
+      - Cubic B-spline curve evaluation at random :math:`t`-values
+      - 500,000
+    * - Case 4
+      - :math:`1 \times 4` Bézier surface evaluation at random :math:`(u,v)`-pairs
+      - 500,000
+    * - Case 5
+      - :math:`1 \times 4` Bézier surface grid evaluation
+      - :math:`500 \times 500`
+    * - Case 6
+      - :math:`2 \times 4` NURBS surface of revolution grid evaluation
+      - :math:`500 \times 500`
+    * - Case 7
+      - :math:`2 \times 9` NURBS surface of revolution grid evaluation
+      - :math:`500 \times 500`
+    
+
 Basic Installation
 ------------------
 

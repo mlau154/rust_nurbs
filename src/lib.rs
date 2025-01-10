@@ -2,6 +2,9 @@ use pyo3::prelude::*;
 use num_integer::binomial;
 
 fn bernstein_poly_rust(n: usize, i: usize, t: f64) -> f64 {
+    if i < 0 || i > n {
+        return 0.0;
+    }
     return (binomial(n, i) as f64) * t.powf(i as f64) * (1.0 - t).powf((n - i) as f64);
 }
 

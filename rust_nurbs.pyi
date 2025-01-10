@@ -3,6 +3,7 @@ Evaluation of NURBS objects in Python (implemented in Rust)
 """
 from typing import Iterable, List
 
+
 def bernstein_poly(n: int, i: int, t: float) -> float:
     r"""
     Evaluates the Bernstein polynomial at a single :math:`t`-value. The Bernstein polynomial is given by
@@ -219,7 +220,7 @@ def bspline_curve_eval(p: Iterable[Iterable[float]], k: Iterable[float], t: floa
             0, & \text{otherwise}
         \end{cases}
 
-    The degree of the B-spline is computed as ``q = k.len() - len(p) - 1``.
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
 
     Parameters
     ----------
