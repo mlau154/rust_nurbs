@@ -59,7 +59,7 @@ def bezier_curve_dCdt(p: Iterable[Iterable[float]], t: float) -> List[float]:
 
     .. math::
 
-        \frac{\text{d}}{\text{d}t} \mathbf{C}(t) = \sum\limits_{i=0}^n B_{i,n-1}(t) \left[n\left( \mathbf{P}_{i+1} - \mathbf{P}_i \right)\right]
+        \frac{\text{d}}{\text{d}t} \mathbf{C}(t) = \sum\limits_{i=0}^{n-1} B_{i,n-1}(t) \left[n\left( \mathbf{P}_{i+1} - \mathbf{P}_i \right)\right]
 
     where :math:`B_{i,n}(t)` is the Bernstein polynomial.
 
@@ -85,7 +85,7 @@ def bezier_curve_d2Cdt2(p: Iterable[Iterable[float]], t: float) -> List[float]:
 
     .. math::
 
-        \frac{\text{d}^2}{\text{d}t^2} \mathbf{C}(t) = \sum\limits_{i=0}^n B_{i,n-2}(t) \left[n(n-1)\left(\mathbf{P}_{i+2} - 2 \mathbf{P}_{i+1} + \mathbf{P}_i \right)\right]
+        \frac{\text{d}^2}{\text{d}t^2} \mathbf{C}(t) = \sum\limits_{i=0}^{n-2} B_{i,n-2}(t) \left[n(n-1)\left(\mathbf{P}_{i+2} - 2 \mathbf{P}_{i+1} + \mathbf{P}_i \right)\right]
 
     where :math:`B_{i,n}(t)` is the Bernstein polynomial.
 
