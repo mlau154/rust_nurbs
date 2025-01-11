@@ -620,6 +620,135 @@ fn bezier_surf_d2sdv2_grid(p: Vec<Vec<Vec<f64>>>, nu: usize, nv: usize) -> PyRes
 }
 
 #[pyfunction]
+fn bezier_surf_eval_uvvecs(p: Vec<Vec<Vec<f64>>>, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let n = p.len() - 1;  // Degree in the u-direction
+    let m = p[0].len() - 1;  // Degree in the v-direction
+    let nu = u.len();
+    let nv = v.len();
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_points: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            for i in 0..n+1 {
+                let b_poly_u = bernstein_poly_rust(n, i, u[u_idx]);
+                for j in 0..m+1 {
+                    let b_poly_v = bernstein_poly_rust(m, j, v[v_idx]);
+                    let b_poly_prod = b_poly_u * b_poly_v;
+                    for k in 0..dim {
+                        evaluated_points[u_idx][v_idx][k] += p[i][j][k] * b_poly_prod;
+                    }
+                }
+            }
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdu_uvvecs(p: Vec<Vec<Vec<f64>>>, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let n = p.len() - 1;  // Degree in the u-direction
+    let float_n = n as f64;
+    let m = p[0].len() - 1;  // Degree in the v-direction
+    let nu = u.len();
+    let nv = v.len();
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            for i in 0..n+1 {
+                let b_poly_du = float_n * (bernstein_poly_rust(n - 1, i - 1, u[u_idx]) - bernstein_poly_rust(n - 1, i, u[u_idx]));
+                for j in 0..m+1 {
+                    let b_poly_v = bernstein_poly_rust(m, j, v[v_idx]);
+                    let b_poly_prod = b_poly_du * b_poly_v;
+                    for k in 0..dim {
+                        evaluated_derivs[u_idx][v_idx][k] += p[i][j][k] * b_poly_prod;
+                    }
+                }
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdv_uvvecs(p: Vec<Vec<Vec<f64>>>, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let n = p.len() - 1;  // Degree in the u-direction
+    let m = p[0].len() - 1;  // Degree in the v-direction
+    let float_m = m as f64;
+    let nu = u.len();
+    let nv = v.len();
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            for i in 0..n+1 {
+                let b_poly_u = bernstein_poly_rust(n, i, u[u_idx]);
+                for j in 0..m+1 {
+                    let b_poly_dv = float_m * (bernstein_poly_rust(m - 1, j - 1, v[v_idx]) - bernstein_poly_rust(m - 1, j, v[v_idx]));
+                    let b_poly_prod = b_poly_u * b_poly_dv;
+                    for k in 0..dim {
+                        evaluated_derivs[u_idx][v_idx][k] += p[i][j][k] * b_poly_prod;
+                    }
+                }
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bezier_surf_d2sdu2_uvvecs(p: Vec<Vec<Vec<f64>>>, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let n = p.len() - 1;  // Degree in the u-direction
+    let float_n = n as f64;
+    let m = p[0].len() - 1;  // Degree in the v-direction
+    let nu = u.len();
+    let nv = v.len();
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            for i in 0..n+1 {
+                let b_poly_du = float_n * (float_n - 1.0) * (bernstein_poly_rust(n - 2, i - 2, u[u_idx]) - 2.0 * bernstein_poly_rust(n - 2, i - 1, u[u_idx]) + bernstein_poly_rust(n - 2, i, u[u_idx]));
+                for j in 0..m+1 {
+                    let b_poly_v = bernstein_poly_rust(m, j, v[v_idx]);
+                    let b_poly_prod = b_poly_du * b_poly_v;
+                    for k in 0..dim {
+                        evaluated_derivs[u_idx][v_idx][k] += p[i][j][k] * b_poly_prod;
+                    }
+                }
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bezier_surf_d2sdv2_uvvecs(p: Vec<Vec<Vec<f64>>>, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let n = p.len() - 1;  // Degree in the u-direction
+    let m = p[0].len() - 1;  // Degree in the v-direction
+    let float_m = m as f64;
+    let nu = u.len();
+    let nv = v.len();
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            for i in 0..n+1 {
+                let b_poly_u = bernstein_poly_rust(n, i, u[u_idx]);
+                for j in 0..m+1 {
+                    let b_poly_dv = float_m * (float_m - 1.0) * (bernstein_poly_rust(m - 2, j - 2, v[v_idx]) - 2.0 * bernstein_poly_rust(m - 2, j - 1, v[v_idx]) + bernstein_poly_rust(m - 2, j, v[v_idx]));
+                    let b_poly_prod = b_poly_u * b_poly_dv;
+                    for k in 0..dim {
+                        evaluated_derivs[u_idx][v_idx][k] += p[i][j][k] * b_poly_prod;
+                    }
+                }
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
 fn rational_bezier_curve_eval(p: Vec<Vec<f64>>, w: Vec<f64>, t: f64) -> PyResult<Vec<f64>> {
     let n = p.len() - 1;
     let dim = p[0].len();
@@ -1008,6 +1137,11 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bezier_surf_dsdv_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_d2sdu2_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_d2sdv2_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_eval_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdu_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdv_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_d2sdu2_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_d2sdv2_uvvecs, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_curve_eval, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_curve_dcdt, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_curve_d2cdt2, m)?)?;

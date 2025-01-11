@@ -529,6 +529,82 @@ def test_bezier_surf_d2sdv2_grid():
     assert second_derivs.shape == (25, 15, 3)
 
 
+def test_bezier_surf_eval_uvvecs():
+    """
+    Evaluates a 1x3 Bézier surface at several :math:`(u,v)` pairs
+    and ensures that the number of dimensions in the evaluated point 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    u = np.array([0.0, 0.2, 0.3, 0.7, 1.0])
+    v = np.array([0.0, 0.01, 0.05, 0.6, 0.7, 0.8, 0.9, 1.0])
+    surf_points = np.array(bezier_surf_eval_uvvecs(p, u, v))
+    assert surf_points.shape == (u.shape[0], v.shape[0], 3)
+
+
+def test_bezier_surf_dsdu_uvvecs():
+    """
+    Evaluates a 1x3 Bézier surface first derivative with respect to :math:`u` at several :math:`(u,v)` pairs
+    and ensures that the number of dimensions in the evaluated derivative array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    u = np.array([0.0, 0.2, 0.3, 0.7, 1.0])
+    v = np.array([0.0, 0.01, 0.05, 0.6, 0.7, 0.8, 0.9, 1.0])
+    first_derivs = np.array(bezier_surf_dsdu_uvvecs(p, u, v))
+    assert first_derivs.shape == (u.shape[0], v.shape[0], 3)
+
+
+def test_bezier_surf_dsdv_uvvecs():
+    """
+    Evaluates a 1x3 Bézier surface first derivative with respect to :math:`v` at several :math:`(u,v)` pairs
+    and ensures that the number of dimensions in the evaluated derivative array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    u = np.array([0.0, 0.2, 0.3, 0.7, 1.0])
+    v = np.array([0.0, 0.01, 0.05, 0.6, 0.7, 0.8, 0.9, 1.0])
+    first_derivs = np.array(bezier_surf_dsdv_uvvecs(p, u, v))
+    assert first_derivs.shape == (u.shape[0], v.shape[0], 3)
+
+
+def test_bezier_surf_d2sdu2_uvvecs():
+    """
+    Evaluates a 1x3 Bézier surface second derivative with respect to :math:`u` at several :math:`(u,v)` pairs
+    and ensures that the number of dimensions in the evaluated derivative array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    u = np.array([0.0, 0.2, 0.3, 0.7, 1.0])
+    v = np.array([0.0, 0.01, 0.05, 0.6, 0.7, 0.8, 0.9, 1.0])
+    second_derivs = np.array(bezier_surf_d2sdu2_uvvecs(p, u, v))
+    assert second_derivs.shape == (u.shape[0], v.shape[0], 3)
+
+
+def test_bezier_surf_d2sdv2_uvvecs():
+    """
+    Evaluates a 1x3 Bézier surface second derivative with respect to :math:`v` at several :math:`(u,v)` pairs
+    and ensures that the number of dimensions in the evaluated derivative array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    u = np.array([0.0, 0.2, 0.3, 0.7, 1.0])
+    v = np.array([0.0, 0.01, 0.05, 0.6, 0.7, 0.8, 0.9, 1.0])
+    second_derivs = np.array(bezier_surf_d2sdv2_uvvecs(p, u, v))
+    assert second_derivs.shape == (u.shape[0], v.shape[0], 3)
+
+
 def test_rational_bezier_curve_eval():
     """
     Evaluates sample 2-D and 3-D rational Bézier curves at a point and ensures

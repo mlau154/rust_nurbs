@@ -855,6 +855,145 @@ def bezier_surf_d2sdv2_grid(p: Iterable[Iterable[Iterable[float]]], nu: int, nv:
         (usually either ``2``, ``3``, or ``4``)
     """
 
+def bezier_surf_eval_uvvecs(p: Iterable[Iterable[Iterable[float]]], u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates a Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at any number of :math:`(u,v)` pairs according to
+
+    .. math::
+
+        \mathbf{S}(u,v) = \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) B_{j,m}(v) \mathbf{P}_{i,j}
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: Iterable[float]
+        Vector of :math:`u`-values at which to evaluate the surface
+    v: Iterable[float]
+        Vector of :math:`v`-values at which to evaluate the surface
+
+    Returns
+    -------
+    List[List[List[float]]]
+        Values of points on the Bézier surface at each of the :math:`(u,v)` pairs.
+        Output array has size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_dsdu_uvvecs(p: Iterable[Iterable[Iterable[float]]], u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the first derivative with respect to :math:`u` on a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at any number of :math:`(u,v)` pairs according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}u} \mathbf{S}(u,v) = n \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 1,n - 1}(u) - B_{i,n - 1}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: Iterable[float]
+        Vector of :math:`u`-values at which to evaluate the surface
+    v: Iterable[float]
+        Vector of :math:`v`-values at which to evaluate the surface
+
+    Returns
+    -------
+    List[List[List[float]]]
+        Values of :math:`N_u \times N_v` first derivatives with respsect to :math:`u` on the Bézier surface at each of the :math:`(u,v)` pairs.
+        Output array has size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_dsdv_uvvecs(p: Iterable[Iterable[Iterable[float]]], u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the first derivative with respect to :math:`v` on a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at any number of :math:`(u,v)` pairs according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}v} \mathbf{S}(u,v) = m \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 1,m - 1}(v) - B_{j,m - 1}(v) \right] \mathbf{P}_{i,j}
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: Iterable[float]
+        Vector of :math:`u`-values at which to evaluate the surface
+    v: Iterable[float]
+        Vector of :math:`v`-values at which to evaluate the surface
+
+    Returns
+    -------
+    List[List[List[float]]]
+        Values of :math:`N_u \times N_v` first derivatives with respsect to :math:`v` on the Bézier surface at each of the :math:`(u,v)` pairs.
+        Output array has size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_d2sdu2_uvvecs(p: Iterable[Iterable[Iterable[float]]], u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the second derivative with respect to :math:`u` on a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at any number of :math:`(u,v)` pairs according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}u^2} \mathbf{S}(u,v) = n(n-1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 2,n - 2} - 2B_{i - 1,n - 2}(u) + B_{i,n - 2}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: Iterable[float]
+        Vector of :math:`u`-values at which to evaluate the surface
+    v: Iterable[float]
+        Vector of :math:`v`-values at which to evaluate the surface
+
+    Returns
+    -------
+    List[List[List[float]]]
+        Values of :math:`N_u \times N_v` second derivatives with respsect to :math:`u` on the Bézier surface at each of the :math:`(u,v)` pairs.
+        Output array has size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_d2sdv2_uvvecs(p: Iterable[Iterable[Iterable[float]]], u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the second derivative with respect to :math:`v` on a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at any number of :math:`(u,v)` pairs according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}v^2} \mathbf{S}(u,v) = m(m - 1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 2,m - 2} - 2B_{j - 1,m - 2}(v) - B_{j,m - 2}(v) \right] \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: Iterable[float]
+        Vector of :math:`u`-values at which to evaluate the surface
+    v: Iterable[float]
+        Vector of :math:`v`-values at which to evaluate the surface
+
+    Returns
+    -------
+    List[List[List[float]]]
+        Values of :math:`N_u \times N_v` second derivatives with respsect to :math:`v` on the Bézier surface at each of the :math:`(u,v)` pairs.
+        Output array has size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
 def rational_bezier_curve_eval(p: Iterable[Iterable[float]], w: Iterable[float], t: float) -> List[float]:
     r"""
     Evaluates a rational Bézier curve with :math:`n+1` control points at a single :math:`t`-value according to
