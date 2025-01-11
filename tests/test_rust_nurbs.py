@@ -38,7 +38,7 @@ def test_bezier_curve_eval():
     assert curve_point.shape == (3,)
 
 
-def test_bezier_curve_dCdt():
+def test_bezier_curve_dcdt():
     """
     Evaluates sample 2-D and 3-D Bézier curve first derivatives at a point and ensures
     that the number of dimensions in the evaluated derivative is correct
@@ -50,7 +50,7 @@ def test_bezier_curve_dCdt():
         [0.7, 0.1],
         [1.0, 0.1]
     ])
-    first_deriv = np.array(bezier_curve_dCdt(p, 0.3))
+    first_deriv = np.array(bezier_curve_dcdt(p, 0.3))
     assert first_deriv.shape == (2,)
 
     # 3-D case
@@ -60,11 +60,11 @@ def test_bezier_curve_dCdt():
         [0.7, 0.1, 0.5],
         [1.0, 0.1, 0.3]
     ])
-    first_deriv = np.array(bezier_curve_dCdt(p, 0.1))
+    first_deriv = np.array(bezier_curve_dcdt(p, 0.1))
     assert first_deriv.shape == (3,)
 
 
-def test_bezier_curve_d2Cdt2():
+def test_bezier_curve_d2cdt2():
     """
     Evaluates sample 2-D and 3-D Bézier curve second derivatives at a point and ensures
     that the number of dimensions in the evaluated derivative is correct
@@ -76,7 +76,7 @@ def test_bezier_curve_d2Cdt2():
         [0.7, 0.1],
         [1.0, 0.1]
     ])
-    second_deriv = np.array(bezier_curve_d2Cdt2(p, 0.3))
+    second_deriv = np.array(bezier_curve_d2cdt2(p, 0.3))
     assert second_deriv.shape == (2,)
 
     # 3-D case
@@ -86,7 +86,7 @@ def test_bezier_curve_d2Cdt2():
         [0.7, 0.1, 0.5],
         [1.0, 0.1, 0.3]
     ])
-    second_deriv = np.array(bezier_curve_d2Cdt2(p, 0.1))
+    second_deriv = np.array(bezier_curve_d2cdt2(p, 0.1))
     assert second_deriv.shape == (3,)
 
 
@@ -103,6 +103,54 @@ def test_bezier_surf_eval():
     surf_point = np.array(bezier_surf_eval(p, 0.3, 0.8))
     assert surf_point.shape == (3,)
 
+
+def test_bezier_surf_dsdu():
+    """
+    Evaluates a 1x3 Bézier surface first derivative with respect to :math:`u` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    first_deriv = np.array(bezier_surf_dsdu(p, 0.3, 0.8))
+    assert first_deriv.shape == (3,)
+
+def test_bezier_surf_dsdv():
+    """
+    Evaluates a 1x3 Bézier surface first derivative with respect to :math:`v` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    first_deriv = np.array(bezier_surf_dsdv(p, 0.3, 0.8))
+    assert first_deriv.shape == (3,)
+
+def test_bezier_surf_d2sdu2():
+    """
+    Evaluates a 1x3 Bézier surface second derivative with respect to :math:`u` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    second_deriv = np.array(bezier_surf_d2sdu2(p, 0.3, 0.8))
+    assert second_deriv.shape == (3,)
+
+def test_bezier_surf_d2sdv2():
+    """
+    Evaluates a 1x3 Bézier surface second derivative with respect to :math:`v` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    second_deriv = np.array(bezier_surf_d2sdv2(p, 0.3, 0.8))
+    assert second_deriv.shape == (3,)
 
 def test_bezier_surf_grid_eval():
     """
@@ -156,7 +204,7 @@ def test_rational_bezier_curve_eval():
     assert curve_point.shape == (3,)
 
 
-def test_rational_bezier_dCdt():
+def test_rational_bezier_dcdt():
     """
     Generates a unit quarter circle and ensures that the slope is correct at a point
     """
@@ -171,12 +219,12 @@ def test_rational_bezier_dCdt():
         1.0
     ])
     curve_point = np.array(rational_bezier_curve_eval(p, w, 0.3))
-    first_deriv = np.array(rational_bezier_curve_dCdt(p, w, 0.3))
+    first_deriv = np.array(rational_bezier_curve_dcdt(p, w, 0.3))
     assert first_deriv.shape == (2,)
     assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
 
 
-def test_rational_bezier_dC2dt2():
+def test_rational_bezier_dc2dt2():
     """
     Generates a unit quarter circle and confirms that the radius of curvature is equal to 1.0
     by using both the first and second derivative calculations
@@ -192,8 +240,8 @@ def test_rational_bezier_dC2dt2():
         1.0
     ])
     t = 0.7
-    first_deriv = np.array(rational_bezier_curve_dCdt(p, w, t))
-    second_deriv = np.array(rational_bezier_curve_d2Cdt2(p, w, t))
+    first_deriv = np.array(rational_bezier_curve_dcdt(p, w, t))
+    second_deriv = np.array(rational_bezier_curve_d2cdt2(p, w, t))
     assert second_deriv.shape == (2,)
     k = abs(first_deriv[0] * second_deriv[1] - first_deriv[1] * second_deriv[0]) / (first_deriv[0]**2 + first_deriv[1]**2) ** 1.5
     assert np.isclose(k, 1.0)

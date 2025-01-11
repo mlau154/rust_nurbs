@@ -52,7 +52,7 @@ def bezier_curve_eval(p: Iterable[Iterable[float]], t: float) -> List[float]:
         Value of the Bézier curve at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
-def bezier_curve_dCdt(p: Iterable[Iterable[float]], t: float) -> List[float]:
+def bezier_curve_dcdt(p: Iterable[Iterable[float]], t: float) -> List[float]:
     r"""
     Evaluates the first derivative (with respect to :math:`t`) of a Bézier curve with :math:`n+1` control 
     points at a single :math:`t`-value according to
@@ -78,7 +78,7 @@ def bezier_curve_dCdt(p: Iterable[Iterable[float]], t: float) -> List[float]:
         Value of the Bézier curve first derivative at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
-def bezier_curve_d2Cdt2(p: Iterable[Iterable[float]], t: float) -> List[float]:
+def bezier_curve_d2cdt2(p: Iterable[Iterable[float]], t: float) -> List[float]:
     r"""
     Evaluates the second derivative (with respect to :math:`t`) of a Bézier curve with :math:`n+1` control 
     points at a single :math:`t`-value according to
@@ -128,6 +128,118 @@ def bezier_surf_eval(p: Iterable[Iterable[Iterable[float]]], u: float, v: float)
     -------
     List[float]
         Value of the Bézier surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bezier_surf_dsdu(p: Iterable[Iterable[Iterable[float]]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the first derivative with respect to :math:`u` of a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction and :math:`m+1` control points in the 
+    :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}u} \mathbf{S}(u,v) = n \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 1,n - 1}(u) - B_{i,n - 1}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the Bézier surface first derivative with respect to :math:`u` at :math:`(u,v)`. Has the same size as the 
+        innermost dimension of ``p``
+    """
+
+def bezier_surf_dsdv(p: Iterable[Iterable[Iterable[float]]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the first derivative with respect to :math:`v` of a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction and :math:`m+1` control points in the 
+    :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}v} \mathbf{S}(u,v) = m \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 1,m - 1}(v) - B_{j,m - 1}(v) \right] \mathbf{P}_{i,j}
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the Bézier surface first derivative with respect to :math:`v` at :math:`(u,v)`. Has the same size as the 
+        innermost dimension of ``p``
+    """
+
+def bezier_surf_d2sdu2(p: Iterable[Iterable[Iterable[float]]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the second derivative with respect to :math:`u` of a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction and :math:`m+1` control points in the 
+    :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}u^2} \mathbf{S}(u,v) = n(n-1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 2,n - 2} - 2B_{i - 1,n - 2}(u) + B_{i,n - 2}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the Bézier surface second derivative with respect to :math:`u` at :math:`(u,v)`. Has the same size as the 
+        innermost dimension of ``p``
+    """
+
+def bezier_surf_d2sdv2(p: Iterable[Iterable[Iterable[float]]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the first derivative with respect to :math:`v` of a Bézier surface with :math:`n+1` 
+    control points in the :math:`u`-direction and :math:`m+1` control points in the 
+    :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}v^2} \mathbf{S}(u,v) = m(m - 1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 2,m - 2} - 2B_{j - 1,m - 2}(v) - B_{j,m - 2}(v) \right] \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the Bézier surface second derivative with respect to :math:`v` at :math:`(u,v)`. Has the same size as the 
+        innermost dimension of ``p``
     """
 
 def bezier_surf_eval_grid(p: Iterable[Iterable[Iterable[float]]], nu: int, nv: int) -> List[List[List[float]]]:
@@ -188,7 +300,7 @@ def rational_bezier_curve_eval(p: Iterable[Iterable[float]], w: Iterable[float],
         Value of the rational Bézier curve at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
-def rational_bezier_curve_dCdt(p: Iterable[Iterable[float]], t: float) -> List[float]:
+def rational_bezier_curve_dcdt(p: Iterable[Iterable[float]], t: float) -> List[float]:
     r"""
     Evaluates the first derivative (with respect to :math:`t`) of a rational Bézier curve with :math:`n+1` control 
     points at a single :math:`t`-value according to
@@ -225,7 +337,7 @@ def rational_bezier_curve_dCdt(p: Iterable[Iterable[float]], t: float) -> List[f
         Value of the rational Bézier curve first derivative at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
-def rational_bezier_curve_d2Cdt2(p: Iterable[Iterable[float]], t: float) -> List[float]:
+def rational_bezier_curve_d2cdt2(p: Iterable[Iterable[float]], t: float) -> List[float]:
     r"""
     Evaluates the second derivative (with respect to :math:`t`) of a rational Bézier curve with :math:`n+1` control 
     points at a single :math:`t`-value according to
