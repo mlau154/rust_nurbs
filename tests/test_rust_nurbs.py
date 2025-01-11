@@ -90,6 +90,84 @@ def test_bezier_curve_d2cdt2():
     assert second_deriv.shape == (3,)
 
 
+def test_bezier_curve_eval_grid():
+    """
+    Evaluates sample 2-D and 3-D Bézier curves along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    curve_point = np.array(bezier_curve_eval_grid(p, 50))
+    assert curve_point.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    curve_point = np.array(bezier_curve_eval_grid(p, 50))
+    assert curve_point.shape == (50, 3)
+
+
+def test_bezier_curve_dcdt_grid():
+    """
+    Evaluates sample 2-D and 3-D Bézier curve first derivatives along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    first_deriv = np.array(bezier_curve_dcdt_grid(p, 50))
+    assert first_deriv.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    first_deriv = np.array(bezier_curve_dcdt_grid(p, 50))
+    assert first_deriv.shape == (50, 3)
+
+
+def test_bezier_curve_d2cdt2_grid():
+    """
+    Evaluates sample 2-D and 3-D Bézier curve second derivatives along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    second_deriv = np.array(bezier_curve_d2cdt2_grid(p, 50))
+    assert second_deriv.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    second_deriv = np.array(bezier_curve_d2cdt2_grid(p, 50))
+    assert second_deriv.shape == (50, 3)
+
+
 def test_bezier_surf_eval():
     """
     Evaluates a 1x3 Bézier surface at a single (u,v) pair 
