@@ -188,6 +188,82 @@ def rational_bezier_curve_eval(p: Iterable[Iterable[float]], w: Iterable[float],
         Value of the rational Bézier curve at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
+def rational_bezier_curve_dCdt(p: Iterable[Iterable[float]], t: float) -> List[float]:
+    r"""
+    Evaluates the first derivative (with respect to :math:`t`) of a rational Bézier curve with :math:`n+1` control 
+    points at a single :math:`t`-value according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}t} \mathbf{C}(t) = \frac{f'(t)g(t) - f(t)g'(t)}{g^2(t)}
+
+    where
+
+    .. math::
+
+        \begin{align}
+            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i
+        \end{align}
+
+    and :math:`B_{i,n}(t)` is the Bernstein polynomial.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    t: float
+        Parameter value :math:`t` at which to evaluate
+    
+    Returns
+    -------
+    List[float]
+        Value of the rational Bézier curve first derivative at :math:`t`. Has the same size as the inner dimension of ``p``
+    """
+
+def rational_bezier_curve_d2Cdt2(p: Iterable[Iterable[float]], t: float) -> List[float]:
+    r"""
+    Evaluates the second derivative (with respect to :math:`t`) of a rational Bézier curve with :math:`n+1` control 
+    points at a single :math:`t`-value according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}t^2} \mathbf{C}(t) = \frac{f''(t)g^2(t) - f(t)g(t)g''(t) - 2f'(t)g(t)g'(t) + 2f(t)[g'(t)]^2}{g^3(t)}
+
+    where
+
+    .. math::
+
+        \begin{align}
+            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \\
+            f''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i \mathbf{P}_i \\
+            g''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i
+        \end{align}
+
+    and :math:`B_{i,n}(t)` is the Bernstein polynomial.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    t: float
+        Parameter value :math:`t` at which to evaluate
+    
+    Returns
+    -------
+    List[float]
+        Value of the rational Bézier curve first derivative at :math:`t`. Has the same size as the inner dimension of ``p``
+    """
+
 def rational_bezier_surf_eval(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], u: float, v: float) -> List[float]:
     r"""
     Evaluates a rational Bézier surface with :math:`n+1` control points in the :math:`u`-direction

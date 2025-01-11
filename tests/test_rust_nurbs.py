@@ -156,6 +156,49 @@ def test_rational_bezier_curve_eval():
     assert curve_point.shape == (3,)
 
 
+def test_rational_bezier_dCdt():
+    """
+    Generates a unit quarter circle and ensures that the slope is correct at a point
+    """
+    p = np.array([
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0]
+    ])
+    w = np.array([
+        1.0, 
+        1 / np.sqrt(2.0), 
+        1.0
+    ])
+    curve_point = np.array(rational_bezier_curve_eval(p, w, 0.3))
+    first_deriv = np.array(rational_bezier_curve_dCdt(p, w, 0.3))
+    assert first_deriv.shape == (2,)
+    assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
+
+
+def test_rational_bezier_dC2dt2():
+    """
+    Generates a unit quarter circle and confirms that the radius of curvature is equal to 1.0
+    by using both the first and second derivative calculations
+    """
+    p = np.array([
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0]
+    ])
+    w = np.array([
+        1.0, 
+        1 / np.sqrt(2.0), 
+        1.0
+    ])
+    t = 0.7
+    first_deriv = np.array(rational_bezier_curve_dCdt(p, w, t))
+    second_deriv = np.array(rational_bezier_curve_d2Cdt2(p, w, t))
+    assert second_deriv.shape == (2,)
+    k = abs(first_deriv[0] * second_deriv[1] - first_deriv[1] * second_deriv[0]) / (first_deriv[0]**2 + first_deriv[1]**2) ** 1.5
+    assert np.isclose(k, 1.0)
+
+
 def test_rational_bezier_surf_eval():
     """
     Evaluates a 2x3 rational Bézier surface at a single (u,v) pair 
