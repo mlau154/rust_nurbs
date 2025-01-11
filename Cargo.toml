@@ -1,6 +1,6 @@
 [package]
 name = "rust_nurbs"
-version = "0.10.0"
+version = "0.11.0"
 edition = "2021"
 # IMPORTANT: the version must be kept on line 3 to be read properly in docs/source/conf.py
 

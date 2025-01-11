@@ -686,6 +686,171 @@ def test_rational_bezier_dc2dt2():
     assert np.isclose(k, 1.0)
 
 
+def test_rational_bezier_curve_eval_grid():
+    """
+    Evaluates sample 2-D and 3-D rational Bézier curves along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    w = np.array([1.0, 0.8, 1.1, 1.0])
+    curve_point = np.array(rational_bezier_curve_eval_grid(p, w, 50))
+    assert curve_point.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    curve_point = np.array(rational_bezier_curve_eval_grid(p, w, 50))
+    assert curve_point.shape == (50, 3)
+
+
+def test_rational_bezier_curve_dcdt_grid():
+    """
+    Evaluates sample 2-D and 3-D rational Bézier curve first derivatives along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    w = np.array([1.0, 0.8, 1.1, 1.0])
+    first_deriv = np.array(rational_bezier_curve_dcdt_grid(p, w, 50))
+    assert first_deriv.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    first_deriv = np.array(rational_bezier_curve_dcdt_grid(p, w, 50))
+    assert first_deriv.shape == (50, 3)
+
+
+def test_rational_bezier_curve_d2cdt2_grid():
+    """
+    Evaluates sample 2-D and 3-D rational Bézier curve second derivatives along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    w = np.array([1.0, 0.8, 1.1, 1.0])
+    second_deriv = np.array(rational_bezier_curve_d2cdt2_grid(p, w, 50))
+    assert second_deriv.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    second_deriv = np.array(rational_bezier_curve_d2cdt2_grid(p, w, 50))
+    assert second_deriv.shape == (50, 3)
+
+
+def test_rational_bezier_curve_eval_tvec():
+    """
+    Evaluates sample 2-D and 3-D rational Bézier curves along a vector of :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    w = np.array([1.0, 0.8, 1.1, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    curve_point = np.array(rational_bezier_curve_eval_tvec(p, w, t_vec))
+    assert curve_point.shape == (t_vec.shape[0], 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    curve_point = np.array(rational_bezier_curve_eval_tvec(p, w, t_vec))
+    assert curve_point.shape == (t_vec.shape[0], 3)
+
+
+def test_rational_bezier_curve_dcdt_tvec():
+    """
+    Evaluates sample 2-D and 3-D rational Bézier curve first derivatives along a vector of 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    w = np.array([1.0, 0.8, 1.1, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    first_deriv = np.array(rational_bezier_curve_dcdt_tvec(p, w, t_vec))
+    assert first_deriv.shape == (t_vec.shape[0], 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    first_deriv = np.array(rational_bezier_curve_dcdt_tvec(p, w, t_vec))
+    assert first_deriv.shape == (t_vec.shape[0], 3)
+
+
+def test_rational_bezier_curve_d2cdt2_tvec():
+    """
+    Evaluates sample 2-D and 3-D rational Bézier curve second derivatives along a vector of 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.3, 0.5],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    w = np.array([1.0, 0.8, 1.1, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    second_deriv = np.array(rational_bezier_curve_d2cdt2_tvec(p, w, t_vec))
+    assert second_deriv.shape == (t_vec.shape[0], 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.7, 0.1, 0.5],
+        [1.0, 0.1, 0.3]
+    ])
+    second_deriv = np.array(rational_bezier_curve_d2cdt2_tvec(p, w, t_vec))
+    assert second_deriv.shape == (t_vec.shape[0], 3)
+
+
 def test_rational_bezier_surf_eval():
     """
     Evaluates a 2x3 rational Bézier surface at a single (u,v) pair 
