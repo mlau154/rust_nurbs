@@ -1037,6 +1037,63 @@ def test_nurbs_curve_eval():
     assert len(k) - len(p) - 1 == 5  # Curve degree
 
 
+def test_nurbs_curve_dcdt():
+    """
+    Generates a quarter circle and ensures that the slope is correct at several points
+    """
+    p = np.array([
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        [-1.0, 1.0],
+        [-1.0, 0.0],
+        [-1.0, -1.0],
+        [0.0, -1.0],
+        [1.0, -1.0],
+        [1.0, 0.0]
+    ])
+    w = np.array([
+        1.0, 
+        1 / np.sqrt(2.0), 
+        1.0,
+        1 / np.sqrt(2.0), 
+        1.0,
+        1 / np.sqrt(2.0), 
+        1.0,
+        1 / np.sqrt(2.0), 
+        1.0,
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1.0, 1.0, 1.0])
+
+    # Try a point in QI
+    t = 0.1
+    curve_point = np.array(nurbs_curve_eval(p, w, k, t))
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
+
+    # Try a point in QII
+    t = 0.4
+    curve_point = np.array(nurbs_curve_eval(p, w, k, t))
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
+
+    # Try a point in QIII
+    t = 0.6
+    curve_point = np.array(nurbs_curve_eval(p, w, k, t))
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
+
+    # Try a point in QIV
+    t = 0.9
+    curve_point = np.array(nurbs_curve_eval(p, w, k, t))
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
+
+
 def test_nurbs_surf_eval():
     """
     Evaluates a 1x2 NURBS surface at a single (u,v) pair 

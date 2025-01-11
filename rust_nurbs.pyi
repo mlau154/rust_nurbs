@@ -1531,6 +1531,37 @@ def nurbs_curve_eval(p: Iterable[Iterable[float]], w: Iterable[float], k: Iterab
         Value of the NURBS curve at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
+def nurbs_curve_dcdt(p: Iterable[Iterable[float]], w: Iterable[float], k: Iterable[float], t: float) -> List[float]:
+    r"""
+    Evaluates a the first derivative with respect to :math:`t` of a Non-Uniform Rational B-Spline (NURBS) curve 
+    with :math:`n+1` control points at a single :math:`t`-value according to
+
+    .. math::
+
+        \mathbf{C}(t) = \frac{\sum_{i=0}^n N_{i,q}(t) w_i \mathbf{P}_i}{\sum_{i=0}^n N_{i,q}(t) w_i}
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. 
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[float]
+        1-D list or array of weights corresponding to each of control points. Must have length
+        equal to the outer dimension of ``p``.
+    k: Iterable[float]
+        1-D list or array of knots
+    t: float
+        Parameter value :math:`t` at which to evaluate
+
+    Returns
+    -------
+    List[float]
+        Value of the NURBS curve derivative w.r.t. :math:`t` at :math:`t`. Has the same size as the inner dimension of ``p``
+    """
+
 def nurbs_surf_eval(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
     r"""
     Evaluates a Non-Uniform Rational B-Spline (NURBS) surface with :math:`n+1` control points in the :math:`u`-direction
