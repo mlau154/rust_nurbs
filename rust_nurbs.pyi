@@ -237,6 +237,64 @@ def bezier_surf_d2sdv2(p: Iterable[Iterable[Iterable[float]]], u: float, v: floa
         innermost dimension of ``p``
     """
 
+def bezier_surf_eval_iso_u(p: Iterable[Iterable[Iterable[float]]], u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates an isoparametric curve in :math:`u` of a Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_v` linearly-spaced points 
+    along the :math:`v`-direction according to
+
+    .. math::
+
+        \mathbf{S}(u,v) = \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: float
+        Parameter value in the :math:`u`-direction defining the isoparametric curve
+    nv: int
+        Number of linearly-spaced points in the :math:`v`-direction. E.g., ``nv=3`` outputs
+        the evaluation of the surface at :math:`v=0.0`, :math:`v=0.5`, and :math:`v=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_v` points along the :math:`u`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_v \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_eval_iso_v(p: Iterable[Iterable[Iterable[float]]], nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates an isoparametric curve in :math:`v` of a Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_u` linearly-spaced points 
+    along the :math:`u`-direction according to
+
+    .. math::
+
+        \mathbf{S}(u,v) = \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    nu: int
+        Number of linearly-spaced points in the :math:`u`-direction. E.g., ``nu=3`` outputs
+        the evaluation of the surface at :math:`u=0.0`, :math:`u=0.5`, and :math:`u=1.0`.
+    v: float
+        Parameter value in the :math:`v`-direction defining the isoparametric curve
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_u` points along the :math:`v`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_u \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
 def bezier_surf_eval_grid(p: Iterable[Iterable[Iterable[float]]], nu: int, nv: int) -> List[List[List[float]]]:
     r"""
     Evaluates a Bézier surface with :math:`n+1` control points in the :math:`u`-direction

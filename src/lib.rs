@@ -157,6 +157,50 @@ fn bezier_surf_d2sdv2(p: Vec<Vec<Vec<f64>>>, u: f64, v: f64) -> PyResult<Vec<f64
 }
 
 #[pyfunction]
+fn bezier_surf_eval_iso_u(p: Vec<Vec<Vec<f64>>>, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let n = p.len() - 1;  // Degree in the u-direction
+    let m = p[0].len() - 1;  // Degree in the v-direction
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_points: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        for i in 0..n+1 {
+            let b_poly_u = bernstein_poly_rust(n, i, u);
+            for j in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, j, v);
+                let b_poly_prod = b_poly_u * b_poly_v;
+                for k in 0..dim {
+                    evaluated_points[v_idx][k] += p[i][j][k] * b_poly_prod;
+                }
+            }
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bezier_surf_eval_iso_v(p: Vec<Vec<Vec<f64>>>, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let n = p.len() - 1;  // Degree in the u-direction
+    let m = p[0].len() - 1;  // Degree in the v-direction
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_points: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for i in 0..n+1 {
+            let b_poly_u = bernstein_poly_rust(n, i, u);
+            for j in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, j, v);
+                let b_poly_prod = b_poly_u * b_poly_v;
+                for k in 0..dim {
+                    evaluated_points[u_idx][k] += p[i][j][k] * b_poly_prod;
+                }
+            }
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
 fn bezier_surf_eval_grid(p: Vec<Vec<Vec<f64>>>, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
     let n = p.len() - 1;  // Degree in the u-direction
     let m = p[0].len() - 1;  // Degree in the v-direction
@@ -653,6 +697,8 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bezier_surf_dsdv, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_d2sdu2, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_d2sdv2, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_eval_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_eval_iso_v, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_eval_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_dsdu_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_dsdv_grid, m)?)?;
