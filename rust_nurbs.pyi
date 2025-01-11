@@ -187,6 +187,89 @@ def bezier_curve_d2cdt2_grid(p: Iterable[Iterable[float]], nt: int) -> List[List
         :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``3``)
     """
 
+def bezier_curve_eval_tvec(p: Iterable[Iterable[float]], t: Iterable[float]) -> List[List[float]]:
+    r"""
+    Evaluates a Bézier curve with :math:`n+1` control points along a vector of :math:`t`-values according to
+
+    .. math::
+
+        \mathbf{C}(t) = \sum\limits_{i=0}^n B_{i,n}(t) \mathbf{P}_i
+
+    where :math:`B_{i,n}(t)` is the Bernstein polynomial.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    t: Iterable[float]
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+    
+    Returns
+    -------
+    List[List[float]]
+        Value of the Bézier curve along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bezier_curve_dcdt_tvec(p: Iterable[Iterable[float]], t: Iterable[float]) -> List[List[float]]:
+    r"""
+    Evaluates the first derivative (with respect to :math:`t`) of a Bézier curve with :math:`n+1` control 
+    points along a vector of :math:`t`-values according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}t} \mathbf{C}(t) = \sum\limits_{i=0}^{n-1} B_{i,n-1}(t) \left[n\left( \mathbf{P}_{i+1} - \mathbf{P}_i \right)\right]
+
+    where :math:`B_{i,n}(t)` is the Bernstein polynomial.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    t: Iterable[float]
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+    
+    Returns
+    -------
+    List[List[float]]
+        Value of the Bézier curve first derivative along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bezier_curve_d2cdt2_tvec(p: Iterable[Iterable[float]], t: Iterable[float]) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative (with respect to :math:`t`) of a Bézier curve with :math:`n+1` control 
+    points along a vector of :math:`t`-values according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}t^2} \mathbf{C}(t) = \sum\limits_{i=0}^{n-2} B_{i,n-2}(t) \left[n(n-1)\left(\mathbf{P}_{i+2} - 2 \mathbf{P}_{i+1} + \mathbf{P}_i \right)\right]
+
+    where :math:`B_{i,n}(t)` is the Bernstein polynomial.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but typical
+        sizes include ``2`` (:math:`x`-:math:`y` space), ``3`` (:math:`x`-:math:`y`-:math:`z` space) and
+        ``4`` (:math:`x`-:math:`y`-:math:`z`-:math:`w` space)
+    t: Iterable[float]
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the Bézier curve first derivative along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
 def bezier_surf_eval(p: Iterable[Iterable[Iterable[float]]], u: float, v: float) -> List[float]:
     r"""
     Evaluates a Bézier surface with :math:`n+1` control points in the :math:`u`-direction
