@@ -184,6 +184,126 @@ def test_bezier_surf_eval_iso_v():
     assert surf_points.shape == (25, 3)
 
 
+def test_bezier_surf_dsdu_iso_u():
+    """
+    Evaluates the first derivative w.r.t. :math:`u` on a 1x3 Bézier surface 
+    along a :math:`u`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    first_derivs = np.array(bezier_surf_dsdu_iso_u(p, 0.4, 15))
+    assert first_derivs.shape == (15, 3)
+
+
+def test_bezier_surf_dsdu_iso_v():
+    """
+    Evaluates the first derivative w.r.t. :math:`u` on a 1x3 Bézier surface 
+    along a :math:`v`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    first_derivs = np.array(bezier_surf_dsdu_iso_v(p, 25, 0.6))
+    assert first_derivs.shape == (25, 3)
+
+
+def test_bezier_surf_dsdv_iso_u():
+    """
+    Evaluates the first derivative w.r.t. :math:`v` on a 1x3 Bézier surface 
+    along a :math:`u`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    first_derivs = np.array(bezier_surf_dsdv_iso_u(p, 0.4, 15))
+    assert first_derivs.shape == (15, 3)
+
+
+def test_bezier_surf_dsdv_iso_v():
+    """
+    Evaluates the first derivative w.r.t. :math:`v` on a 1x3 Bézier surface 
+    along a :math:`v`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    first_derivs = np.array(bezier_surf_dsdv_iso_v(p, 25, 0.6))
+    assert first_derivs.shape == (25, 3)
+
+
+def test_bezier_surf_d2sdu2_iso_u():
+    """
+    Evaluates the second derivative w.r.t. :math:`u` on a 1x3 Bézier surface 
+    along a :math:`u`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    second_derivs = np.array(bezier_surf_d2sdu2_iso_u(p, 0.4, 15))
+    assert second_derivs.shape == (15, 3)
+
+
+def test_bezier_surf_d2sdu2_iso_v():
+    """
+    Evaluates the second derivative w.r.t. :math:`u` on a 1x3 Bézier surface 
+    along a :math:`v`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    second_derivs = np.array(bezier_surf_d2sdu2_iso_v(p, 25, 0.6))
+    assert second_derivs.shape == (25, 3)
+
+
+def test_bezier_surf_d2sdv2_iso_u():
+    """
+    Evaluates the second derivative w.r.t. :math:`v` on a 1x3 Bézier surface 
+    along a :math:`u`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    second_derivs = np.array(bezier_surf_d2sdv2_iso_u(p, 0.4, 15))
+    assert second_derivs.shape == (15, 3)
+
+
+def test_bezier_surf_d2sdv2_iso_v():
+    """
+    Evaluates the second derivative w.r.t. :math:`v` on a 1x3 Bézier surface 
+    along a :math:`v`-isoparametric curve
+    and ensures that the number of dimensions in the evaluated derivative 
+    array is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    second_derivs = np.array(bezier_surf_d2sdv2_iso_v(p, 25, 0.6))
+    assert second_derivs.shape == (25, 3)
+
+
 def test_bezier_surf_eval_grid():
     """
     Evaluates a 1x3 Bézier surface on a grid of (u,v) pairs

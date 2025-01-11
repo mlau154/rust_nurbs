@@ -295,6 +295,246 @@ def bezier_surf_eval_iso_v(p: Iterable[Iterable[Iterable[float]]], nu: int, v: f
         (usually ``3``)
     """
 
+def bezier_surf_dsdu_iso_u(p: Iterable[Iterable[Iterable[float]]], u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the first derivative w.r.t. :math:`u` along an isoparametric curve in :math:`u` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_v` linearly-spaced points 
+    along the :math:`v`-direction according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}u} \mathbf{S}(u,v) = n \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 1,n - 1}(u) - B_{i,n - 1}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: float
+        Parameter value in the :math:`u`-direction defining the isoparametric curve
+    nv: int
+        Number of linearly-spaced points in the :math:`v`-direction. E.g., ``nv=3`` outputs
+        the evaluation of the surface at :math:`v=0.0`, :math:`v=0.5`, and :math:`v=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_v` first derivatives w.r.t. :math:`u` along the :math:`u`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_v \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_dsdu_iso_v(p: Iterable[Iterable[Iterable[float]]], nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the first derivative w.r.t. :math:`u` along an isoparametric curve in :math:`v` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_u` linearly-spaced points 
+    along the :math:`u`-direction according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}u} \mathbf{S}(u,v) = n \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 1,n - 1}(u) - B_{i,n - 1}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    nu: int
+        Number of linearly-spaced points in the :math:`u`-direction. E.g., ``nu=3`` outputs
+        the evaluation of the surface at :math:`u=0.0`, :math:`u=0.5`, and :math:`u=1.0`.
+    v: float
+        Parameter value in the :math:`v`-direction defining the isoparametric curve
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_u` first derivatives w.r.t. :math:`u` along the :math:`v`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_u \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_dsdv_iso_u(p: Iterable[Iterable[Iterable[float]]], u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`v` along an isoparametric curve in :math:`u` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_v` linearly-spaced points 
+    along the :math:`v`-direction according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}v} \mathbf{S}(u,v) = m \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 1,m - 1}(v) - B_{j,m - 1}(v) \right] \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: float
+        Parameter value in the :math:`u`-direction defining the isoparametric curve
+    nv: int
+        Number of linearly-spaced points in the :math:`v`-direction. E.g., ``nv=3`` outputs
+        the evaluation of the surface at :math:`v=0.0`, :math:`v=0.5`, and :math:`v=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_v` first derivatives w.r.t. :math:`v` along the :math:`u`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_v \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_dsdv_iso_v(p: Iterable[Iterable[Iterable[float]]], nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the first derivative w.r.t. :math:`u` along an isoparametric curve in :math:`v` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_u` linearly-spaced points 
+    along the :math:`u`-direction according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}v} \mathbf{S}(u,v) = m \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 1,m - 1}(v) - B_{j,m - 1}(v) \right] \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    nu: int
+        Number of linearly-spaced points in the :math:`u`-direction. E.g., ``nu=3`` outputs
+        the evaluation of the surface at :math:`u=0.0`, :math:`u=0.5`, and :math:`u=1.0`.
+    v: float
+        Parameter value in the :math:`v`-direction defining the isoparametric curve
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_u` first derivatives w.r.t. :math:`u` along the :math:`v`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_u \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_d2sdu2_iso_u(p: Iterable[Iterable[Iterable[float]]], u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`u` along an isoparametric curve in :math:`u` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_v` linearly-spaced points 
+    along the :math:`v`-direction according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}u^2} \mathbf{S}(u,v) = n(n-1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 2,n - 2} - 2B_{i - 1,n - 2}(u) + B_{i,n - 2}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: float
+        Parameter value in the :math:`u`-direction defining the isoparametric curve
+    nv: int
+        Number of linearly-spaced points in the :math:`v`-direction. E.g., ``nv=3`` outputs
+        the evaluation of the surface at :math:`v=0.0`, :math:`v=0.5`, and :math:`v=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_v` second derivatives w.r.t. :math:`u` along the :math:`u`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_v \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_d2sdu2_iso_v(p: Iterable[Iterable[Iterable[float]]], nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`u` along an isoparametric curve in :math:`v` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_u` linearly-spaced points 
+    along the :math:`u`-direction according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}u^2} \mathbf{S}(u,v) = n(n-1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m \left[ B_{i - 2,n - 2} - 2B_{i - 1,n - 2}(u) + B_{i,n - 2}(u) \right] B_{j,m}(v) \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    nu: int
+        Number of linearly-spaced points in the :math:`u`-direction. E.g., ``nu=3`` outputs
+        the evaluation of the surface at :math:`u=0.0`, :math:`u=0.5`, and :math:`u=1.0`.
+    v: float
+        Parameter value in the :math:`v`-direction defining the isoparametric curve
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_u` second derivatives w.r.t. :math:`u` along the :math:`v`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_u \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_d2sdv2_iso_u(p: Iterable[Iterable[Iterable[float]]], u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`v` along an isoparametric curve in :math:`u` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_v` linearly-spaced points 
+    along the :math:`v`-direction according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}v^2} \mathbf{S}(u,v) = m(m - 1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 2,m - 2} - 2B_{j - 1,m - 2}(v) - B_{j,m - 2}(v) \right] \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    u: float
+        Parameter value in the :math:`u`-direction defining the isoparametric curve
+    nv: int
+        Number of linearly-spaced points in the :math:`v`-direction. E.g., ``nv=3`` outputs
+        the evaluation of the surface at :math:`v=0.0`, :math:`v=0.5`, and :math:`v=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_v` second derivatives w.r.t. :math:`v` along the :math:`u`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_v \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
+def bezier_surf_d2sdv2_iso_v(p: Iterable[Iterable[Iterable[float]]], nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`u` along an isoparametric curve in :math:`v` of a 
+    Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at :math:`N_u` linearly-spaced points 
+    along the :math:`u`-direction according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}v^2} \mathbf{S}(u,v) = m(m - 1) \sum\limits_{i=0}^n \sum\limits_{j=0}^m B_{i,n}(u) \left[ B_{j - 2,m - 2} - 2B_{j - 1,m - 2}(v) - B_{j,m - 2}(v) \right] \mathbf{P}_{i,j}
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    nu: int
+        Number of linearly-spaced points in the :math:`u`-direction. E.g., ``nu=3`` outputs
+        the evaluation of the surface at :math:`u=0.0`, :math:`u=0.5`, and :math:`u=1.0`.
+    v: float
+        Parameter value in the :math:`v`-direction defining the isoparametric curve
+
+    Returns
+    -------
+    List[List[float]]
+        Values of :math:`N_u` second derivatives w.r.t. :math:`u` along the :math:`v`-isoparametric curve of the Bézier surface.
+        Output array has size :math:`N_u \times d`, where :math:`d` is the spatial dimension
+        (usually ``3``)
+    """
+
 def bezier_surf_eval_grid(p: Iterable[Iterable[Iterable[float]]], nu: int, nv: int) -> List[List[List[float]]]:
     r"""
     Evaluates a Bézier surface with :math:`n+1` control points in the :math:`u`-direction
