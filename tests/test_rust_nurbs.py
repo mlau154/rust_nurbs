@@ -933,6 +933,84 @@ def test_bspline_curve_eval():
     assert len(k) - len(p) - 1 == 3  # Curve degree
 
 
+def test_bspline_curve_dcdt():
+    """
+    Evaluates the first derivative w.r.t. :math:`t` of sample uniform 2-D 
+    and 3-D cubic B-spline curves at a point and 
+    ensures that the number of dimensions in the evaluated point is correct.
+    The knot vector is uniform because all the internal knots create
+    a linear spacing between the starting and ending knots. Additionally,
+    we can verify that the degree is 3 because 
+    ``q = len(k) - len(p) - 1 = 10 - 6 - 1 = 3``
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.0, 0.1],
+        [0.2, 0.1],
+        [0.4, 0.2],
+        [0.6, 0.1],
+        [0.8, 0.0]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    first_deriv = np.array(bspline_curve_dcdt(p, k, 0.7))
+    assert first_deriv.shape == (2,)
+    assert len(k) - len(p) - 1 == 3  # Curve degree
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    curve_point = np.array(bspline_curve_dcdt(p, k, 0.2))
+    assert curve_point.shape == (3,)
+    assert len(k) - len(p) - 1 == 3  # Curve degree
+
+
+def test_bspline_curve_dc2dt2():
+    """
+    Evaluates the second derivative w.r.t. :math:`t` of sample uniform 2-D 
+    and 3-D cubic B-spline curves at a point and 
+    ensures that the number of dimensions in the evaluated point is correct.
+    The knot vector is uniform because all the internal knots create
+    a linear spacing between the starting and ending knots. Additionally,
+    we can verify that the degree is 3 because 
+    ``q = len(k) - len(p) - 1 = 10 - 6 - 1 = 3``
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.0, 0.1],
+        [0.2, 0.1],
+        [0.4, 0.2],
+        [0.6, 0.1],
+        [0.8, 0.0]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    first_deriv = np.array(bspline_curve_d2cdt2(p, k, 0.7))
+    assert first_deriv.shape == (2,)
+    assert len(k) - len(p) - 1 == 3  # Curve degree
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    curve_point = np.array(bspline_curve_d2cdt2(p, k, 0.2))
+    assert curve_point.shape == (3,)
+    assert len(k) - len(p) - 1 == 3  # Curve degree
+
+
 def test_bspline_surf_eval():
     """
     Evaluates a 1x2 B-spline surface at a single (u,v) pair 
