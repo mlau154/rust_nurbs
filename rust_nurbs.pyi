@@ -1442,7 +1442,7 @@ def bspline_curve_dcdt(p: Iterable[Iterable[float]], k: Iterable[float], t: floa
 
     .. math::
 
-        N'_{i,q}(t) &= \frac{q}{k_{i+q} - k_i} N_{i,q-1}(t) - \frac{q}{k_{i+q+1} - k_{i+1}} N_{i+1,q-1}(t)
+        N'_{i,q}(t) = \frac{q}{k_{i+q} - k_i} N_{i,q-1}(t) - \frac{q}{k_{i+q+1} - k_{i+1}} N_{i+1,q-1}(t)
 
     The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
 
@@ -1475,7 +1475,7 @@ def bspline_curve_d2cdt2(p: Iterable[Iterable[float]], k: Iterable[float], t: fl
 
     .. math::
 
-        N''_{i,q}(t) &= \frac{q}{k_{i+q} - k_i} \left[ \frac{q-1}{k_{i+q-1}-k_i} N_{i,q-2}(t) - \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) \right] - \frac{q}{k_{i+q+1} - k_{i+1}} \left[ \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) - \frac{q-1}{k_{i+q+1}-k_{i+2}} N_{i+2,q-2}(t) \right]
+        N''_{i,q}(t) = \frac{q}{k_{i+q} - k_i} \left[ \frac{q-1}{k_{i+q-1}-k_i} N_{i,q-2}(t) - \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) \right] - \frac{q}{k_{i+q+1} - k_{i+1}} \left[ \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) - \frac{q-1}{k_{i+q+1}-k_{i+2}} N_{i+2,q-2}(t) \right]
 
     The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
 
@@ -1493,6 +1493,206 @@ def bspline_curve_d2cdt2(p: Iterable[Iterable[float]], k: Iterable[float], t: fl
     -------
     List[float]
         Value of the second derivative w.r.t. :math:`t` of the B-spline curve at :math:`t`. Has the same size as the inner dimension of ``p``
+    """
+
+def bspline_curve_eval_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt: int) -> List[List[float]]:
+    r"""
+    Evaluates a B-spline curve with :math:`n+1` control points on a 
+    grid of linearly-spaced :math:`t`-values according to
+
+    .. math::
+
+        \mathbf{C}(t) = \sum\limits_{i=0}^n N_{i,q}(t) \mathbf{P}_i
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. 
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    k: Iterable[float]
+        1-D list or array of knots
+    nt: int
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve at :math:`N_t` linearly-spaced points. Output array has size
+        :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bspline_curve_dcdt_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt: int) -> List[List[float]]:
+    r"""
+    Evaluates the first derivative with respect to :math:`t` of a B-spline curve 
+    with :math:`n+1` control points on a grid of linearly-spaced :math:`t`-values according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}t} \mathbf{C}(t) = \sum\limits_{i=0}^n N'_{i,q}(t) \mathbf{P}_i
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q` and its derivative is given by
+
+    .. math::
+
+        N'_{i,q}(t) = \frac{q}{k_{i+q} - k_i} N_{i,q-1}(t) - \frac{q}{k_{i+q+1} - k_{i+1}} N_{i+1,q-1}(t)
+
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    k: Iterable[float]
+        1-D list or array of knots
+    nt: int
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve first derivatve w.r.t. :math:`t` at :math:`N_t` linearly-spaced points. Output array has size
+        :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bspline_curve_d2cdt2_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt: int) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative with respect to :math:`t` of a B-spline curve 
+    with :math:`n+1` control points on a grid of linearly-spaced :math:`t`-values according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}t^2} \mathbf{C}(t) = \sum\limits_{i=0}^n N''_{i,q}(t) \mathbf{P}_i
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q` and its second derivative is given by
+
+    .. math::
+
+        N''_{i,q}(t) = \frac{q}{k_{i+q} - k_i} \left[ \frac{q-1}{k_{i+q-1}-k_i} N_{i,q-2}(t) - \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) \right] - \frac{q}{k_{i+q+1} - k_{i+1}} \left[ \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) - \frac{q-1}{k_{i+q+1}-k_{i+2}} N_{i+2,q-2}(t) \right]
+
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    k: Iterable[float]
+        1-D list or array of knots
+    nt: int
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve second derivative w.r.t. :math:`t` at :math:`N_t` linearly-spaced points. Output array has size
+        :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bspline_curve_eval_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: List[float]) -> List[List[float]]:
+    r"""
+    Evaluates a B-spline curve with :math:`n+1` control points on a 
+    grid of linearly-spaced :math:`t`-values according to
+
+    .. math::
+
+        \mathbf{C}(t) = \sum\limits_{i=0}^n N_{i,q}(t) \mathbf{P}_i
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. 
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    k: Iterable[float]
+        1-D list or array of knots
+    t: Iterable[float]
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bspline_curve_dcdt_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: List[float]) -> List[List[float]]:
+    r"""
+    Evaluates the first derivative with respect to :math:`t` of a B-spline curve 
+    with :math:`n+1` control points on a grid of linearly-spaced :math:`t`-values according to
+
+    .. math::
+
+        \frac{\text{d}}{\text{d}t} \mathbf{C}(t) = \sum\limits_{i=0}^n N'_{i,q}(t) \mathbf{P}_i
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q` and its derivative is given by
+
+    .. math::
+
+        N'_{i,q}(t) = \frac{q}{k_{i+q} - k_i} N_{i,q-1}(t) - \frac{q}{k_{i+q+1} - k_{i+1}} N_{i+1,q-1}(t)
+
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    k: Iterable[float]
+        1-D list or array of knots
+    t: Iterable[float]
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve first derivatve w.r.t. :math:`t` along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bspline_curve_d2cdt2_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: List[float]) -> List[List[float]]:
+    r"""
+    Evaluates the second derivative with respect to :math:`t` of a B-spline curve 
+    with :math:`n+1` control points on a grid of linearly-spaced :math:`t`-values according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}t^2} \mathbf{C}(t) = \sum\limits_{i=0}^n N''_{i,q}(t) \mathbf{P}_i
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q` and its second derivative is given by
+
+    .. math::
+
+        N''_{i,q}(t) = \frac{q}{k_{i+q} - k_i} \left[ \frac{q-1}{k_{i+q-1}-k_i} N_{i,q-2}(t) - \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) \right] - \frac{q}{k_{i+q+1} - k_{i+1}} \left[ \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) - \frac{q-1}{k_{i+q+1}-k_{i+2}} N_{i+2,q-2}(t) \right]
+
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    k: Iterable[float]
+        1-D list or array of knots
+    t: Iterable[float]
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve second derivative w.r.t. :math:`t` along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
     """
 
 def bspline_surf_eval(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
