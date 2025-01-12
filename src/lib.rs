@@ -1432,6 +1432,188 @@ fn bspline_surf_eval(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64, 
 }
 
 #[pyfunction]
+fn bspline_surf_dsdu(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let num_knots_u = ku.len();  // Number of knots in the u-direction
+    let num_knots_v = kv.len();  // Number of knots in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let float_q = q as f64;
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    for i in 0..n+1 {
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let span_a: f64 = ku[i + q] - ku[i];
+        let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        let bspline_basis_du = ka * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i, u) - kb * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i + 1, u);
+        for j in 0..m+1 {
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+            let bspline_basis_prod = bspline_basis_du * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_deriv[k] += float_q * p[i][j][k] * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdv(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let num_knots_u = ku.len();  // Number of knots in the u-direction
+    let num_knots_v = kv.len();  // Number of knots in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    for j in 0..m+1 { // Switch the loop order for performance
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let span_a: f64 = kv[j + r] - kv[j];
+        let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        let bspline_basis_dv = ka * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j, v) - kb * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j + 1, v);
+        for i in 0..n+1 {
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_dv;
+            for k in 0..dim {
+                evaluated_deriv[k] += float_r * p[i][j][k] * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdu2(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let num_knots_u = ku.len();  // Number of knots in the u-direction
+    let num_knots_v = kv.len();  // Number of knots in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let float_q = q as f64;
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    if q < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_deriv);
+    }
+    for i in 0..n+1 {
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let mut kc: f64 = 0.0;
+        let mut kd: f64 = 0.0;
+        let mut ke: f64 = 0.0;
+        let span_a: f64 = ku[i + q] - ku[i];
+        let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+        let span_c: f64 = ku[i + q - 1] - ku[i];
+        let span_d: f64 = ku[i + q] - ku[i + 1];
+        let span_e: f64 = ku[i + q + 1] - ku[i + 2];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        if span_c != 0.0 {
+            kc = 1.0 / span_c;
+        }
+        if span_d != 0.0 {
+            kd = 1.0 / span_d;
+        }
+        if span_e != 0.0 {
+            ke = 1.0 / span_e;
+        }
+        let bspline_basis_d = kd * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 1, u);
+        let bspline_basis_d2u = ka * (kc * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i, u) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 2, u));
+        for j in 0..m+1 {
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+            let bspline_basis_prod = bspline_basis_d2u * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_deriv[k] += float_q * (float_q - 1.0) * p[i][j][k] * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdv2(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let n = p.len() - 1;  // Number of control points in the u-direction minus 1
+    let m = p[0].len() - 1;  // Number of control points in the v-direction minus 1
+    let num_knots_u = ku.len();  // Number of knots in the u-direction
+    let num_knots_v = kv.len();  // Number of knots in the v-direction
+    let q = num_knots_u - n - 2;  // Degree in the u-direction
+    let r = num_knots_v - m - 2;  // Degree in the v-direction
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let dim = p[0][0].len();  // Number of spatial dimensions
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    if r < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_deriv);
+    }
+    for j in 0..m+1 { // Switch the loop order for performance
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let mut kc: f64 = 0.0;
+        let mut kd: f64 = 0.0;
+        let mut ke: f64 = 0.0;
+        let span_a: f64 = kv[j + r] - kv[j];
+        let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+        let span_c: f64 = kv[j + r - 1] - kv[j];
+        let span_d: f64 = kv[j + r] - kv[j + 1];
+        let span_e: f64 = kv[j + r + 1] - kv[j + 2];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        if span_c != 0.0 {
+            kc = 1.0 / span_c;
+        }
+        if span_d != 0.0 {
+            kd = 1.0 / span_d;
+        }
+        if span_e != 0.0 {
+            ke = 1.0 / span_e;
+        }
+        let bspline_basis_d = kd * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 1, v);
+        let bspline_basis_d2v = ka * (kc * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j, v) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 2, v));
+        for i in 0..n+1 {
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_d2v;
+            for k in 0..dim {
+                evaluated_deriv[k] += float_r * (float_r - 1.0) * p[i][j][k] * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
 fn bspline_surf_eval_grid(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>,
     nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
     let n = p.len() - 1;  // Number of control points in the u-direction minus 1
@@ -1985,6 +2167,10 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bspline_curve_dcdt_tvec, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_curve_d2cdt2_tvec, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_eval, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdu, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdv, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_eval_grid, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_curve_eval, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_curve_dcdt, m)?)?;

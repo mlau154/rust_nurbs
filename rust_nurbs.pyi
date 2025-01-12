@@ -1728,6 +1728,138 @@ def bspline_surf_eval(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float
         Value of the B-spline surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
     """
 
+def bspline_surf_dsdu(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates a the first derivative w.r.t. :math:`u` of a B-spline surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\partial}{\partial u} \mathbf{S}(u,v) = \sum\limits_{i=0}^n \sum\limits_{j=0}^m N'_{i,q}(u) N_{j,r}(v) \mathbf{P}_{i,j}
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. The degree of the B-spline
+    in the :math:`u`-direction is computed as ``q = len(ku) - len(p) - 1``, and the degree of the B-spline
+    surface in the :math:`v`-direction is computed as ``r = len(kv) - len(p[0]) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the first derivative w.r.t. :math:`u` of the B-spline surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bspline_surf_dsdv(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates a the first derivative w.r.t. :math:`v` of a B-spline surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\partial}{\partial v} \mathbf{S}(u,v) = \sum\limits_{i=0}^n \sum\limits_{j=0}^m N_{i,q}(u) N'_{j,r}(v) \mathbf{P}_{i,j}
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. The degree of the B-spline
+    in the :math:`u`-direction is computed as ``q = len(ku) - len(p) - 1``, and the degree of the B-spline
+    surface in the :math:`v`-direction is computed as ``r = len(kv) - len(p[0]) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the first derivative w.r.t. :math:`v` of the B-spline surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bspline_surf_d2sdu2(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates a the second derivative w.r.t. :math:`u` of a B-spline surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\partial^2}{\partial u^2} \mathbf{S}(u,v) = \sum\limits_{i=0}^n \sum\limits_{j=0}^m N''_{i,q}(u) N_{j,r}(v) \mathbf{P}_{i,j}
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. The degree of the B-spline
+    in the :math:`u`-direction is computed as ``q = len(ku) - len(p) - 1``, and the degree of the B-spline
+    surface in the :math:`v`-direction is computed as ``r = len(kv) - len(p[0]) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the second derivative w.r.t. :math:`u` of the B-spline surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bspline_surf_d2sdv2(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates a the second derivative w.r.t. :math:`v` of a B-spline surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair according to
+
+    .. math::
+
+        \frac{\partial^2}{\partial v^2} \mathbf{S}(u,v) = \sum\limits_{i=0}^n \sum\limits_{j=0}^m N_{i,q}(u) N''_{j,r}(v) \mathbf{P}_{i,j}
+
+    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. The degree of the B-spline
+    in the :math:`u`-direction is computed as ``q = len(ku) - len(p) - 1``, and the degree of the B-spline
+    surface in the :math:`v`-direction is computed as ``r = len(kv) - len(p[0]) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the second derivative w.r.t. :math:`v` of the B-spline surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
 def bspline_surf_eval_grid(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], nu: int, nv: int) -> List[List[List[float]]]:
     r"""
     Evaluates a B-spline surface with :math:`n+1` control points in the :math:`u`-direction

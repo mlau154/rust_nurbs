@@ -1030,6 +1030,94 @@ def test_bspline_surf_eval():
     assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
 
 
+def test_bspline_surf_dsdu():
+    """
+    Evaluates a 1x2 B-spline surface first derivative with respect to :math:`u` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.5, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    first_deriv = np.array(bspline_surf_dsdu(p, ku, kv, 0.3, 0.8))
+    assert first_deriv.shape == (3,)
+
+
+def test_bspline_surf_dsdv():
+    """
+    Evaluates a 1x2 B-spline surface first derivative with respect to :math:`v` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.5, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    first_deriv = np.array(bspline_surf_dsdv(p, ku, kv, 0.3, 0.8))
+    assert first_deriv.shape == (3,)
+
+
+def test_bspline_surf_d2sdu2():
+    """
+    Evaluates a 1x2 B-spline surface derivative w.r.t. :math:`u` and ensures that the derivative is ZERO.
+    Also evaluates a 2x2 B-spline surface surface second derivative with respect to :math:`u` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.5, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    second_deriv = np.array(bspline_surf_d2sdu2(p, ku, kv, 0.3, 0.8))
+    assert second_deriv.shape == (3,)
+    assert all([d == 0.0 for d in second_deriv])
+
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    second_deriv = np.array(bspline_surf_d2sdu2(p, ku, kv, 0.3, 0.8))
+    assert second_deriv.shape == (3,)
+
+
+def test_bspline_surf_d2sdv2():
+    """
+    Evaluates both a 1x2 B-spline surface and a 2x2 B-spline surface surface second 
+    derivative with respect to :math:`v` at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative is correct
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.5, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    second_deriv = np.array(bspline_surf_d2sdu2(p, ku, kv, 0.3, 0.8))
+    assert second_deriv.shape == (3,)
+    assert all([d == 0.0 for d in second_deriv])
+
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    second_deriv = np.array(bspline_surf_d2sdv2(p, ku, kv, 0.3, 0.8))
+    assert second_deriv.shape == (3,)
+
+
 def test_bspline_surf_eval_grid():
     """
     Evaluates a 1x2 B-spline surface on a grid of (u,v) pairs
