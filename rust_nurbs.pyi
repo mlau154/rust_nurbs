@@ -1035,10 +1035,10 @@ def rational_bezier_curve_dcdt(p: Iterable[Iterable[float]], w: Iterable[float],
     .. math::
 
         \begin{align}
-            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
-            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
-            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
-            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i
+            f(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i
         \end{align}
 
     and :math:`B_{i,n}(t)` is the Bernstein polynomial.
@@ -1075,12 +1075,12 @@ def rational_bezier_curve_d2cdt2(p: Iterable[Iterable[float]], w: Iterable[float
     .. math::
 
         \begin{align}
-            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
-            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
-            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
-            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \\
-            f''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i \mathbf{P}_i \\
-            g''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i
+            f(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \\
+            f''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2}(t) - 2B_{i-1,n-2}(t) + B_{i,n-2}(t) \right] w_i \mathbf{P}_i \\
+            g''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2}(t) - 2B_{i-1,n-2}(t) + B_{i,n-2}(t) \right] w_i
         \end{align}
 
     and :math:`B_{i,n}(t)` is the Bernstein polynomial.
@@ -1147,10 +1147,10 @@ def rational_bezier_curve_dcdt_grid(p: Iterable[Iterable[float]], w: Iterable[fl
     .. math::
 
         \begin{align}
-            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
-            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
-            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
-            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i
+            f(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i
         \end{align}
 
     and :math:`B_{i,n}(t)` is the Bernstein polynomial.
@@ -1185,12 +1185,12 @@ def rational_bezier_curve_d2cdt2_grid(p: Iterable[Iterable[float]], w: Iterable[
     .. math::
 
         \begin{align}
-            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
-            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
-            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
-            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \\
-            f''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i \mathbf{P}_i \\
-            g''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i
+            f(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \\
+            f''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2}(t) - 2B_{i-1,n-2}(t) + B_{i,n-2}(t) \right] w_i \mathbf{P}_i \\
+            g''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2}(t) - 2B_{i-1,n-2}(t) + B_{i,n-2}(t) \right] w_i
         \end{align}
 
     and :math:`B_{i,n}(t)` is the Bernstein polynomial.
@@ -1259,10 +1259,10 @@ def rational_bezier_curve_dcdt_tvec(p: Iterable[Iterable[float]], w: Iterable[fl
     .. math::
 
         \begin{align}
-            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
-            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
-            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
-            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i
+            f(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i
         \end{align}
 
     and :math:`B_{i,n}(t)` is the Bernstein polynomial.
@@ -1297,12 +1297,12 @@ def rational_bezier_curve_d2cdt2_tvec(p: Iterable[Iterable[float]], w: Iterable[
     .. math::
 
         \begin{align}
-            f(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \mathbf{P}_i \\
-            g(t) &= \sum\limits_{i=0}^n B_{i,n} w_i \\
-            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \mathbf{P}_i \\
-            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1} - B_{i,n-1} \right] w_i \\
-            f''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i \mathbf{P}_i \\
-            g''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2} - 2B_{i-1,n-2} + B_{i,n-2} \right] w_i
+            f(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n B_{i,n}(t) w_i \\
+            f'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \mathbf{P}_i \\
+            g'(t) &= n \sum\limits_{i=0}^n \left[ B_{i-1,n-1}(t) - B_{i,n-1}(t) \right] w_i \\
+            f''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2}(t) - 2B_{i-1,n-2}(t) + B_{i,n-2}(t) \right] w_i \mathbf{P}_i \\
+            g''(t) &= n (n-1) \sum\limits_{i=0}^n \left[ B_{i-2,n-2}(t) - 2B_{i-1,n-2}(t) + B_{i,n-2}(t) \right] w_i
         \end{align}
 
     and :math:`B_{i,n}(t)` is the Bernstein polynomial.
@@ -1538,9 +1538,21 @@ def nurbs_curve_dcdt(p: Iterable[Iterable[float]], w: Iterable[float], k: Iterab
 
     .. math::
 
-        \mathbf{C}(t) = \frac{\sum_{i=0}^n N_{i,q}(t) w_i \mathbf{P}_i}{\sum_{i=0}^n N_{i,q}(t) w_i}
+        \frac{\text{d}}{\text{d}t} \mathbf{C}(t) = \frac{f'(t)g(t)-f(t)g'(t)}{g^2(t)}
 
-    where :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. 
+    where
+
+    .. math::
+
+        \begin{align}
+            f(t) &= \sum\limits_{i=0}^n N_{i,q}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n N_{i,q}(t) w_i \\
+            f'(t) &= \sum\limits_{i=0}^n N'_{i,q}(t) w_i \mathbf{P}_i \\
+            g'(t) &= \sum\limits_{i=0}^n N'_{i,q}(t) w_i \\
+            N'_{i,q}(t) &= \frac{q}{k_{i+q} - k_i} N_{i,q-1}(t) - \frac{q}{k_{i+q+1} - k_{i+1}} N_{i+1,q-1}(t) \\
+        \end{align}
+
+    and :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. 
     The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
 
     Parameters
@@ -1560,6 +1572,52 @@ def nurbs_curve_dcdt(p: Iterable[Iterable[float]], w: Iterable[float], k: Iterab
     -------
     List[float]
         Value of the NURBS curve derivative w.r.t. :math:`t` at :math:`t`. Has the same size as the inner dimension of ``p``
+    """
+
+def nurbs_curve_d2cdt2(p: Iterable[Iterable[float]], w: Iterable[float], k: Iterable[float], t: float) -> List[float]:
+    r"""
+    Evaluates a the second derivative with respect to :math:`t` of a Non-Uniform Rational B-Spline (NURBS) curve 
+    with :math:`n+1` control points at a single :math:`t`-value according to
+
+    .. math::
+
+        \frac{\text{d}^2}{\text{d}t^2} \mathbf{C}(t) = \frac{f''(t)g^2(t) - f(t)g(t)g''(t) - 2f'(t)g(t)g'(t) + 2f(t)[g'(t)]^2}{g^3(t)}
+
+    where
+
+    .. math::
+
+        \begin{align}
+            f(t) &= \sum\limits_{i=0}^n N_{i,q}(t) w_i \mathbf{P}_i \\
+            g(t) &= \sum\limits_{i=0}^n N_{i,q}(t) w_i \\
+            f'(t) &= \sum\limits_{i=0}^n N'_{i,q}(t) w_i \mathbf{P}_i \\
+            g'(t) &= \sum\limits_{i=0}^n N'_{i,q}(t) w_i \\
+            f''(t) &= \sum\limits_{i=0}^n N''_{i,q}(t) w_i \mathbf{P}_i \\
+            g''(t) &= \sum\limits_{i=0}^n N''_{i,q}(t) w_i \\
+            N'_{i,q}(t) &= \frac{q}{k_{i+q} - k_i} N_{i,q-1}(t) - \frac{q}{k_{i+q+1} - k_{i+1}} N_{i+1,q-1}(t) \\
+            N''_{i,q}(t) &= \frac{q}{k_{i+q} - k_i} \left[ \frac{q-1}{k_{i+q-1}-k_i} N_{i,q-2}(t) - \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) \right] - \frac{q}{k_{i+q+1} - k_{i+1}} \left[ \frac{q-1}{k_{i+q}-k_{i+1}} N_{i+1,q-2}(t) - \frac{q-1}{k_{i+q+1}-k_{i+2}} N_{i+2,q-2}(t) \right]
+        \end{align}
+
+    and :math:`N_{i,q}(t)` is the B-spline basis function of degree :math:`q`. 
+    The degree of the B-spline is computed as ``q = len(k) - len(p) - 1``.
+
+    Parameters
+    ----------
+    p: Iterable[Iterable[float]]
+        2-D list or array of control points where the inner dimension can have any size, but the typical 
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[float]
+        1-D list or array of weights corresponding to each of control points. Must have length
+        equal to the outer dimension of ``p``.
+    k: Iterable[float]
+        1-D list or array of knots
+    t: float
+        Parameter value :math:`t` at which to evaluate
+
+    Returns
+    -------
+    List[float]
+        Value of the NURBS curve second derivative w.r.t. :math:`t` at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
 def nurbs_surf_eval(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:

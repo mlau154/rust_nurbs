@@ -1257,6 +1257,71 @@ fn nurbs_curve_dcdt(p: Vec<Vec<f64>>, w: Vec<f64>, k: Vec<f64>, t: f64) -> PyRes
 }
 
 #[pyfunction]
+fn nurbs_curve_d2cdt2(p: Vec<Vec<f64>>, w: Vec<f64>, k: Vec<f64>, t: f64) -> PyResult<Vec<f64>> {
+    let n = p.len() - 1;  // Number of control points minus 1
+    let num_knots = k.len();
+    let q = num_knots - n - 2;
+    let float_q = q as f64;
+    let possible_span_indices: Vec<usize> = get_possible_span_indices(&k);
+    let dim = p[0].len();
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    let mut sum_0: Vec<f64> = vec![0.0; dim];
+    let mut sum_1: Vec<f64> = vec![0.0; dim];
+    let mut sum_2: Vec<f64> = vec![0.0; dim];
+    let mut w_sum_0: f64 = 0.0;
+    let mut w_sum_1: f64 = 0.0;
+    let mut w_sum_2: f64 = 0.0;
+    for i in 0..n+1 {
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let mut kc: f64 = 0.0;
+        let mut kd: f64 = 0.0;
+        let mut ke: f64 = 0.0;
+        let span_a: f64 = k[i + q] - k[i];
+        let span_b: f64 = k[i + q + 1] - k[i + 1];
+        let span_c: f64 = k[i + q - 1] - k[i];
+        let span_d: f64 = k[i + q] - k[i + 1];
+        let span_e: f64 = k[i + q + 1] - k[i + 2];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        if span_c != 0.0 {
+            kc = 1.0 / span_c;
+        }
+        if span_d != 0.0 {
+            kd = 1.0 / span_d;
+        }
+        if span_e != 0.0 {
+            ke = 1.0 / span_e;
+        }
+        let bspline_basis_0 = cox_de_boor(&k, &possible_span_indices, q, i, t);
+        let bspline_basis_1 = ka * cox_de_boor(&k, &possible_span_indices, q - 1, i, t) - kb * cox_de_boor(&k, &possible_span_indices, q - 1, i + 1, t);
+        let bspline_basis_d = kd * cox_de_boor(&k, &possible_span_indices, q - 2, i + 1, t);
+        let bspline_basis_2 = ka * (kc * cox_de_boor(&k, &possible_span_indices, q - 2, i, t) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&k, &possible_span_indices, q - 2, i + 2, t));
+        w_sum_0 += w[i] * bspline_basis_0;
+        w_sum_1 += w[i] * bspline_basis_1;
+        w_sum_2 += w[i] * bspline_basis_2;
+        for j in 0..dim {
+            sum_0[j] += w[i] * p[i][j] * bspline_basis_0;
+            sum_1[j] += w[i] * p[i][j] * bspline_basis_1;
+            sum_2[j] += w[i] * p[i][j] * bspline_basis_2;
+        }
+    }
+    for j in 0..dim {
+        evaluated_deriv[j] = (
+            float_q * (float_q - 1.0) * sum_2[j] * w_sum_0 * w_sum_0 - 
+            float_q * (float_q - 1.0) * sum_0[j] * w_sum_0 * w_sum_2 -
+            2.0 * float_q * float_q * sum_1[j] * w_sum_0 * w_sum_1 +
+            2.0 * float_q * float_q * sum_0[j] * w_sum_1 * w_sum_1
+        ) / w_sum_0.powf(3.0);
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
 fn nurbs_surf_eval(p: Vec<Vec<Vec<f64>>>, w: Vec<Vec<f64>>,
     ku: Vec<f64>, kv: Vec<f64>, u: f64, v: f64) -> PyResult<Vec<f64>> {
     let n = p.len() - 1;  // Number of control points in the u-direction minus 1
@@ -1377,6 +1442,7 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bspline_surf_eval_grid, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_curve_eval, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_curve_dcdt, m)?)?;
+    m.add_function(wrap_pyfunction!(nurbs_curve_d2cdt2, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_surf_eval, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_surf_eval_grid, m)?)?;
     Ok(())

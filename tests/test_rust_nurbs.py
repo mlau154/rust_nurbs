@@ -1094,6 +1094,67 @@ def test_nurbs_curve_dcdt():
     assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
 
 
+def test_nurbs_curve_d2cdt2():
+    """
+    Generates a quarter circle and ensures that the slope is correct at several points
+    """
+    p = np.array([
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        [-1.0, 1.0],
+        [-1.0, 0.0],
+        [-1.0, -1.0],
+        [0.0, -1.0],
+        [1.0, -1.0],
+        [1.0, 0.0]
+    ])
+    w = np.array([
+        1.0, 
+        1 / np.sqrt(2.0), 
+        1.0,
+        1 / np.sqrt(2.0), 
+        1.0,
+        1 / np.sqrt(2.0), 
+        1.0,
+        1 / np.sqrt(2.0), 
+        1.0,
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1.0, 1.0, 1.0])
+
+    # Try a point in QI
+    t = 0.1
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    second_deriv = np.array(nurbs_curve_d2cdt2(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    kappa = abs(first_deriv[0] * second_deriv[1] - first_deriv[1] * second_deriv[0]) / (first_deriv[0]**2 + first_deriv[1]**2) ** 1.5
+    assert np.isclose(kappa, 1.0)
+
+    # Try a point in QII
+    t = 0.4
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    second_deriv = np.array(nurbs_curve_d2cdt2(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    kappa = abs(first_deriv[0] * second_deriv[1] - first_deriv[1] * second_deriv[0]) / (first_deriv[0]**2 + first_deriv[1]**2) ** 1.5
+    assert np.isclose(kappa, 1.0)
+
+    # Try a point in QIII
+    t = 0.6
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    second_deriv = np.array(nurbs_curve_d2cdt2(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    kappa = abs(first_deriv[0] * second_deriv[1] - first_deriv[1] * second_deriv[0]) / (first_deriv[0]**2 + first_deriv[1]**2) ** 1.5
+    assert np.isclose(kappa, 1.0)
+
+    # Try a point in QIV
+    t = 0.9
+    first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
+    second_deriv = np.array(nurbs_curve_d2cdt2(p, w, k, t))
+    assert first_deriv.shape == (2,)
+    kappa = abs(first_deriv[0] * second_deriv[1] - first_deriv[1] * second_deriv[0]) / (first_deriv[0]**2 + first_deriv[1]**2) ** 1.5
+    assert np.isclose(kappa, 1.0)
+
+
 def test_nurbs_surf_eval():
     """
     Evaluates a 1x2 NURBS surface at a single (u,v) pair 
