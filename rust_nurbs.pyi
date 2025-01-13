@@ -1355,6 +1355,102 @@ def rational_bezier_surf_eval(p: Iterable[Iterable[Iterable[float]]], w: Iterabl
         Value of the rational Bézier surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
     """
 
+def rational_bezier_surf_dsdu(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the first derivative w.r.t. :math:`u` of a rational Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the rational Bézier surface first derivative w.r.t. :math:`u` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def rational_bezier_surf_dsdv(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the first derivative w.r.t. :math:`v` of a rational Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the rational Bézier surface first derivative w.r.t. :math:`v` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def rational_bezier_surf_d2sdu2(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`u` of a rational Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the rational Bézier surface second derivative w.r.t. :math:`u` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def rational_bezier_surf_d2sdv2(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`v` of a rational Bézier surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the rational Bézier surface second derivative w.r.t. :math:`v` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
 def rational_bezier_surf_eval_grid(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], nu: int, nv: int) -> List[List[List[float]]]:
     r"""
     Evaluates a rational Bézier surface with :math:`n+1` control points in the :math:`u`-direction
@@ -2941,6 +3037,122 @@ def nurbs_surf_eval(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable
     -------
     List[float]
         Value of the NURBS surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def nurbs_surf_dsdu(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], 
+                    ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the first derivative w.r.t. :math:`u` of a NURBS surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the NURBS surface first derivative w.r.t. :math:`u` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def nurbs_surf_dsdv(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], 
+                    ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the first derivative w.r.t. :math:`v` of a NURBS surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the NURBS surface first derivative w.r.t. :math:`v` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def nurbs_surf_d2sdu2(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], 
+                      ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`u` of a NURBS surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the NURBS surface second derivative w.r.t. :math:`u` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def nurbs_surf_d2sdv2(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], 
+                      ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the second derivative w.r.t. :math:`v` of a NURBS surface with :math:`n+1` control points in the :math:`u`-direction
+    and :math:`m+1` control points in the :math:`v`-direction at a :math:`(u,v)` parameter pair
+    
+    Parameters
+    ----------
+    p: Iterable[Iterable[Iterable[float]]]
+        3-D list or array of control points where the innermost dimension can have any size, but the typical
+        size is ``3`` (:math:`x`-:math:`y`-:math:`z` space)
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the NURBS surface second derivative w.r.t. :math:`v` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
     """
 
 def nurbs_surf_eval_grid(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]], ku: Iterable[float], kv: Iterable[float], nu: int, nv: int) -> List[List[List[float]]]:

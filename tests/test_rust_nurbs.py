@@ -873,6 +873,98 @@ def test_rational_bezier_surf_eval():
     assert surf_point.shape == (3,)
 
 
+def test_rational_bezier_surf_dsdu():
+    """
+    Evaluates a 2x3 rational Bézier surface first derivative w.r.t. u
+    at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative 
+    is correct. Note that we must have p.shape[:2] == w.shape or
+    an error will be thrown.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.7, 1.0],
+        [1.0, 1.5, 0.6, 1.0],
+        [1.0, 0.7, 1.1, 1.0]
+    ])
+    assert p.shape[:2] == w.shape
+    first_deriv = np.array(rational_bezier_surf_dsdu(p, w, 0.3, 0.4))
+    assert first_deriv.shape == (3,)
+
+
+def test_rational_bezier_surf_dsdv():
+    """
+    Evaluates a 2x3 rational Bézier surface first derivative w.r.t. v
+    at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative 
+    is correct. Note that we must have p.shape[:2] == w.shape or
+    an error will be thrown.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.7, 1.0],
+        [1.0, 1.5, 0.6, 1.0],
+        [1.0, 0.7, 1.1, 1.0]
+    ])
+    assert p.shape[:2] == w.shape
+    first_deriv = np.array(rational_bezier_surf_dsdv(p, w, 0.3, 0.4))
+    assert first_deriv.shape == (3,)
+
+
+def test_rational_bezier_surf_d2sdu2():
+    """
+    Evaluates a 2x3 rational Bézier surface second derivative w.r.t. u
+    at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative 
+    is correct. Note that we must have p.shape[:2] == w.shape or
+    an error will be thrown.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.7, 1.0],
+        [1.0, 1.5, 0.6, 1.0],
+        [1.0, 0.7, 1.1, 1.0]
+    ])
+    assert p.shape[:2] == w.shape
+    second_deriv = np.array(rational_bezier_surf_d2sdu2(p, w, 0.3, 0.4))
+    assert second_deriv.shape == (3,)
+
+
+def test_rational_bezier_surf_d2sdv2():
+    """
+    Evaluates a 2x3 rational Bézier surface first derivative w.r.t. v
+    at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated derivative 
+    is correct. Note that we must have p.shape[:2] == w.shape or
+    an error will be thrown.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.7, 1.0],
+        [1.0, 1.5, 0.6, 1.0],
+        [1.0, 0.7, 1.1, 1.0]
+    ])
+    assert p.shape[:2] == w.shape
+    second_deriv = np.array(rational_bezier_surf_d2sdv2(p, w, 0.3, 0.4))
+    assert second_deriv.shape == (3,)
+
+
 def test_rational_bezier_surf_eval_grid():
     """
     Evaluates a 2x3 rational Bézier surface on a grid of (u,v) pairs
@@ -2083,6 +2175,114 @@ def test_nurbs_surf_eval():
     surf_point = np.array(nurbs_surf_eval(p, w, ku, kv, 0.0, 0.9))
     assert surf_point.shape == (3,)
     assert len(ku) - len(p) - 1 == 1  # Degree in the u-direction (q)
+    assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
+
+
+def test_nurbs_surf_dsdu():
+    """
+    Evaluates a 2x2 NURBS surface first derivative w.r.t. u at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated point 
+    is correct.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]],
+        [[0.0, 0.1, 3.0], [0.5, 0.3, 3.0], [0.5, -0.3, 3.0], [1.2, 0.3, 3.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.9, 1.0],
+        [1.0, 1.2, 0.8, 1.0],
+        [1.0, 1.7, 1.1, 1.0],
+        [1.0, 0.9, 1.3, 1.0]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 0.6, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    assert p.shape[:2] == w.shape
+    surf_point = np.array(nurbs_surf_dsdu(p, w, ku, kv, 0.0, 0.9))
+    assert surf_point.shape == (3,)
+    assert len(ku) - len(p) - 1 == 2  # Degree in the u-direction (q)
+    assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
+
+
+def test_nurbs_surf_dsdv():
+    """
+    Evaluates a 2x2 NURBS surface first derivative w.r.t. v at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated point 
+    is correct.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]],
+        [[0.0, 0.1, 3.0], [0.5, 0.3, 3.0], [0.5, -0.3, 3.0], [1.2, 0.3, 3.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.9, 1.0],
+        [1.0, 1.2, 0.8, 1.0],
+        [1.0, 1.7, 1.1, 1.0],
+        [1.0, 0.9, 1.3, 1.0]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 0.6, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    assert p.shape[:2] == w.shape
+    surf_point = np.array(nurbs_surf_dsdv(p, w, ku, kv, 0.0, 0.9))
+    assert surf_point.shape == (3,)
+    assert len(ku) - len(p) - 1 == 2  # Degree in the u-direction (q)
+    assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
+
+
+def test_nurbs_surf_d2sdu2():
+    """
+    Evaluates a 2x2 NURBS surface second derivative w.r.t. u at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated point 
+    is correct.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]],
+        [[0.0, 0.1, 3.0], [0.5, 0.3, 3.0], [0.5, -0.3, 3.0], [1.2, 0.3, 3.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.9, 1.0],
+        [1.0, 1.2, 0.8, 1.0],
+        [1.0, 1.7, 1.1, 1.0],
+        [1.0, 0.9, 1.3, 1.0]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 0.6, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    assert p.shape[:2] == w.shape
+    second_deriv = np.array(nurbs_surf_d2sdu2(p, w, ku, kv, 0.3, 0.9))
+    assert second_deriv.shape == (3,)
+    assert len(ku) - len(p) - 1 == 2  # Degree in the u-direction (q)
+    assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
+
+
+def test_nurbs_surf_d2sdv2():
+    """
+    Evaluates a 2x2 NURBS surface second derivative w.r.t. v at a single (u,v) pair 
+    and ensures that the number of dimensions in the evaluated point 
+    is correct.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]],
+        [[0.0, 0.1, 3.0], [0.5, 0.3, 3.0], [0.5, -0.3, 3.0], [1.2, 0.3, 3.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.9, 1.0],
+        [1.0, 1.2, 0.8, 1.0],
+        [1.0, 1.7, 1.1, 1.0],
+        [1.0, 0.9, 1.3, 1.0]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 0.6, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    assert p.shape[:2] == w.shape
+    second_deriv = np.array(nurbs_surf_d2sdv2(p, w, ku, kv, 0.3, 0.9))
+    assert second_deriv.shape == (3,)
+    assert len(ku) - len(p) - 1 == 2  # Degree in the u-direction (q)
     assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
 
 
