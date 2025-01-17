@@ -263,6 +263,117 @@ fn bezier_surf_d2sdv2(p: Vec<Vec<Vec<f64>>>, u: f64, v: f64) -> PyResult<Vec<f64
 }
 
 #[pyfunction]
+fn bezier_surf_eval_dp(i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let eval_dp: f64 = bernstein_poly_rust(n, i, u) * bernstein_poly_rust(m, j, v);
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdu_dp(i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_n = n as f64;
+    let a: f64 = float_n * (bernstein_poly_rust(n - 1, i - 1, u) - bernstein_poly_rust(n - 1, i, u));
+    let b: f64 = bernstein_poly_rust(m, j, v);
+    let eval_dp: f64 = a * b;
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdv_dp(i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_m = m as f64;
+    let a: f64 = float_m * (bernstein_poly_rust(m - 1, j - 1, v) - bernstein_poly_rust(m - 1, j, v));
+    let b: f64 = bernstein_poly_rust(n, i, u);
+    let eval_dp: f64 = a * b;
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn bezier_surf_d2sdu2_dp(i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_n = n as f64;
+    let a: f64 = float_n * (float_n - 1.0) * (bernstein_poly_rust(n - 2, i - 2, u) - 2.0 * bernstein_poly_rust(n - 2, i - 1, u) + bernstein_poly_rust(n - 2, i, u));
+    let b: f64 = bernstein_poly_rust(m, j, v);
+    let eval_dp: f64 = a * b;
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn bezier_surf_d2sdv2_dp(i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_m = m as f64;
+    let a: f64 = float_m * (float_m - 1.0) * (bernstein_poly_rust(m - 2, j - 2, v) - 2.0 * bernstein_poly_rust(m - 2, j - 1, v) + bernstein_poly_rust(m - 2, j, v));
+    let b: f64 = bernstein_poly_rust(n, i, u);
+    let eval_dp: f64 = a * b;
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdu_dp_iso_u(i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let a: f64 = float_n * (bernstein_poly_rust(n - 1, i - 1, u) - bernstein_poly_rust(n - 1, i, u));
+        let b: f64 = bernstein_poly_rust(m, j, v);
+        let eval_dp: f64 = a * b;
+        for k in 0..dim {
+            dp_mat[v_idx][k] = eval_dp;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdu_dp_iso_v(i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let a: f64 = float_n * (bernstein_poly_rust(n - 1, i - 1, u) - bernstein_poly_rust(n - 1, i, u));
+        let b: f64 = bernstein_poly_rust(m, j, v);
+        let eval_dp: f64 = a * b;
+        for k in 0..dim {
+            dp_mat[u_idx][k] = eval_dp;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdv_dp_iso_u(i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let a: f64 = float_m * (bernstein_poly_rust(m - 1, j - 1, v) - bernstein_poly_rust(m - 1, j, v));
+        let b: f64 = bernstein_poly_rust(n, i, u);
+        let eval_dp: f64 = a * b;
+        for k in 0..dim {
+            dp_mat[v_idx][k] = eval_dp;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn bezier_surf_dsdv_dp_iso_v(i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let a: f64 = float_m * (bernstein_poly_rust(m - 1, j - 1, v) - bernstein_poly_rust(m - 1, j, v));
+        let b: f64 = bernstein_poly_rust(n, i, u);
+        let eval_dp: f64 = a * b;
+        for k in 0..dim {
+            dp_mat[u_idx][k] = eval_dp;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
 fn bezier_surf_eval_iso_u(p: Vec<Vec<Vec<f64>>>, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
     let n = p.len() - 1;  // Degree in the u-direction
     let m = p[0].len() - 1;  // Degree in the v-direction
@@ -5268,6 +5379,15 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bezier_surf_dsdv, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_d2sdu2, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_d2sdv2, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_eval_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdu_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdv_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_d2sdu2_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_d2sdv2_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdu_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdu_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdv_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_surf_dsdv_dp_iso_v, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_eval_iso_u, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_eval_iso_v, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_dsdu_iso_u, m)?)?;
