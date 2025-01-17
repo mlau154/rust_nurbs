@@ -1467,6 +1467,643 @@ fn rational_bezier_surf_d2sdv2(p: Vec<Vec<Vec<f64>>>, w: Vec<Vec<f64>>, u: f64, 
 }
 
 #[pyfunction]
+fn rational_bezier_surf_eval_dp(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let mut w_sum: f64 = 0.0;
+    for ii in 0..n+1 {
+        for jj in 0..m+1 {
+            w_sum += w[ii][jj] * bernstein_poly_rust(n, ii, u) * bernstein_poly_rust(m, jj, v);
+        }
+    }
+    let dp_val: f64 = w[i][j] * bernstein_poly_rust(n, i, u) * bernstein_poly_rust(m, j, v) / w_sum;
+    let dp_vec: Vec<f64> = vec![dp_val; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdu_dp(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_n = n as f64;
+    let mut dp_0: f64 = 0.0;
+    let mut dp_1: f64 = 0.0;
+    let mut w_sum_0: f64 = 0.0;
+    let mut w_sum_1: f64 = 0.0;
+    for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+        let b_poly_u = bernstein_poly_rust(n, ii, u);
+        let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+        for jj in 0..m+1 {
+            let b_poly_v = bernstein_poly_rust(m, jj, v);
+            w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+            w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+            if ii == i && jj == j {
+                dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+            }
+        }
+    }
+    let dp_val: f64 = float_n * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+    let dp_vec: Vec<f64> = vec![dp_val; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdv_dp(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_m = m as f64;
+    let mut dp_0: f64 = 0.0;
+    let mut dp_1: f64 = 0.0;
+    let mut w_sum_0: f64 = 0.0;
+    let mut w_sum_1: f64 = 0.0;
+    for jj in 0..m+1 {
+        let b_poly_v = bernstein_poly_rust(m, jj, v);
+        let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+        for ii in 0..n+1 {
+            let b_poly_u = bernstein_poly_rust(n, ii, u);
+            w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+            w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+            if ii == i && jj == j {
+                dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+            }
+        }
+    }
+    let dp_val: f64 = float_m * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+    let dp_vec: Vec<f64> = vec![dp_val; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdu2_dp(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_n = n as f64;
+    let mut dp_0: f64 = 0.0;
+    let mut dp_1: f64 = 0.0;
+    let mut dp_2: f64 = 0.0;
+    let mut w_sum_0: f64 = 0.0;
+    let mut w_sum_1: f64 = 0.0;
+    let mut w_sum_2: f64 = 0.0;
+    for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+        let b_poly_u = bernstein_poly_rust(n, ii, u);
+        let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+        let b_poly_d2u = bernstein_poly_rust(n - 2, ii - 2, u) - 2.0 * bernstein_poly_rust(n - 2, ii - 1, u) + bernstein_poly_rust(n - 2, ii, u);
+        for jj in 0..m+1 {
+            let b_poly_v = bernstein_poly_rust(m, jj, v);
+            w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+            w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+            w_sum_2 += w[ii][jj] * b_poly_d2u * b_poly_v;
+            if ii == i && jj == j {
+                dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+                dp_2 = w[ii][jj] * b_poly_d2u * b_poly_v;
+            }
+        }
+    }
+    let dp_val: f64 = (
+        float_n * (float_n - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+        float_n * (float_n - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+        2.0 * float_n * float_n * dp_1 * w_sum_0 * w_sum_1 +
+        2.0 * float_n * float_n * dp_0 * w_sum_1 * w_sum_1
+    ) / w_sum_0.powf(3.0);
+    let dp_vec: Vec<f64> = vec![dp_val; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdv2_dp(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_m = m as f64;
+    let mut dp_0: f64 = 0.0;
+    let mut dp_1: f64 = 0.0;
+    let mut dp_2: f64 = 0.0;
+    let mut w_sum_0: f64 = 0.0;
+    let mut w_sum_1: f64 = 0.0;
+    let mut w_sum_2: f64 = 0.0;
+    for jj in 0..m+1 {
+        let b_poly_v = bernstein_poly_rust(m, jj, v);
+        let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+        let b_poly_d2v = bernstein_poly_rust(m - 2, jj - 2, v) - 2.0 * bernstein_poly_rust(m - 2, jj - 1, v) + bernstein_poly_rust(m - 2, jj, v);
+        for ii in 0..n+1 {
+            let b_poly_u = bernstein_poly_rust(n, ii, u);
+            w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+            w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+            w_sum_2 += w[ii][jj] * b_poly_d2v * b_poly_u;
+            if ii == i && jj == j {
+                dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+                dp_2 = w[ii][jj] * b_poly_d2v * b_poly_u;
+            }
+        }
+    }
+    let dp_val: f64 = (
+        float_m * (float_m - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+        float_m * (float_m - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+        2.0 * float_m * float_m * dp_1 * w_sum_0 * w_sum_1 +
+        2.0 * float_m * float_m * dp_0 * w_sum_1 * w_sum_1
+    ) / w_sum_0.powf(3.0);
+    let dp_vec: Vec<f64> = vec![dp_val; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_eval_dp_iso_u(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut w_sum: f64 = 0.0;
+        for ii in 0..n+1 {
+            for jj in 0..m+1 {
+                w_sum += w[ii][jj] * bernstein_poly_rust(n, ii, u) * bernstein_poly_rust(m, jj, v);
+            }
+        }
+        let dp_val: f64 = w[i][j] * bernstein_poly_rust(n, i, u) * bernstein_poly_rust(m, j, v) / w_sum;
+        for k in 0..dim {
+            dp_mat[v_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_eval_dp_iso_v(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut w_sum: f64 = 0.0;
+        for ii in 0..n+1 {
+            for jj in 0..m+1 {
+                w_sum += w[ii][jj] * bernstein_poly_rust(n, ii, u) * bernstein_poly_rust(m, jj, v);
+            }
+        }
+        let dp_val: f64 = w[i][j] * bernstein_poly_rust(n, i, u) * bernstein_poly_rust(m, j, v) / w_sum;
+        for k in 0..dim {
+            dp_mat[u_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdu_dp_iso_u(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+            let b_poly_u = bernstein_poly_rust(n, ii, u);
+            let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+            for jj in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, jj, v);
+                w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+                w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                    dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+                }
+            }
+        }
+        let dp_val: f64 = float_n * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+        for k in 0..dim {
+            dp_mat[v_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdu_dp_iso_v(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+            let b_poly_u = bernstein_poly_rust(n, ii, u);
+            let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+            for jj in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, jj, v);
+                w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+                w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                    dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+                }
+            }
+        }
+        let dp_val: f64 = float_n * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+        for k in 0..dim {
+            dp_mat[u_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdv_dp_iso_u(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        for jj in 0..m+1 {
+            let b_poly_v = bernstein_poly_rust(m, jj, v);
+            let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+            for ii in 0..n+1 {
+                let b_poly_u = bernstein_poly_rust(n, ii, u);
+                w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+                w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                    dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+                }
+            }
+        }
+        let dp_val: f64 = float_m * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+        for k in 0..dim {
+            dp_mat[v_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdv_dp_iso_v(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        for jj in 0..m+1 {
+            let b_poly_v = bernstein_poly_rust(m, jj, v);
+            let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+            for ii in 0..n+1 {
+                let b_poly_u = bernstein_poly_rust(n, ii, u);
+                w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+                w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                    dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+                }
+            }
+        }
+        let dp_val: f64 = float_m * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+        for k in 0..dim {
+            dp_mat[u_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdu2_dp_iso_u(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut dp_2: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        let mut w_sum_2: f64 = 0.0;
+        for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+            let b_poly_u = bernstein_poly_rust(n, ii, u);
+            let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+            let b_poly_d2u = bernstein_poly_rust(n - 2, ii - 2, u) - 2.0 * bernstein_poly_rust(n - 2, ii - 1, u) + bernstein_poly_rust(n - 2, ii, u);
+            for jj in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, jj, v);
+                w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+                w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+                w_sum_2 += w[ii][jj] * b_poly_d2u * b_poly_v;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                    dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+                    dp_2 = w[ii][jj] * b_poly_d2u * b_poly_v;
+                }
+            }
+        }
+        let dp_val: f64 = (
+            float_n * (float_n - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+            float_n * (float_n - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+            2.0 * float_n * float_n * dp_1 * w_sum_0 * w_sum_1 +
+            2.0 * float_n * float_n * dp_0 * w_sum_1 * w_sum_1
+        ) / w_sum_0.powf(3.0);
+        for k in 0..dim {
+            dp_mat[v_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdu2_dp_iso_v(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut dp_2: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        let mut w_sum_2: f64 = 0.0;
+        for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+            let b_poly_u = bernstein_poly_rust(n, ii, u);
+            let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+            let b_poly_d2u = bernstein_poly_rust(n - 2, ii - 2, u) - 2.0 * bernstein_poly_rust(n - 2, ii - 1, u) + bernstein_poly_rust(n - 2, ii, u);
+            for jj in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, jj, v);
+                w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+                w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+                w_sum_2 += w[ii][jj] * b_poly_d2u * b_poly_v;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                    dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+                    dp_2 = w[ii][jj] * b_poly_d2u * b_poly_v;
+                }
+            }
+        }
+        let dp_val: f64 = (
+            float_n * (float_n - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+            float_n * (float_n - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+            2.0 * float_n * float_n * dp_1 * w_sum_0 * w_sum_1 +
+            2.0 * float_n * float_n * dp_0 * w_sum_1 * w_sum_1
+        ) / w_sum_0.powf(3.0);
+        for k in 0..dim {
+            dp_mat[u_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdv2_dp_iso_u(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut dp_2: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        let mut w_sum_2: f64 = 0.0;
+        for jj in 0..m+1 {
+            let b_poly_v = bernstein_poly_rust(m, jj, v);
+            let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+            let b_poly_d2v = bernstein_poly_rust(m - 2, jj - 2, v) - 2.0 * bernstein_poly_rust(m - 2, jj - 1, v) + bernstein_poly_rust(m - 2, jj, v);
+            for ii in 0..n+1 {
+                let b_poly_u = bernstein_poly_rust(n, ii, u);
+                w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+                w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+                w_sum_2 += w[ii][jj] * b_poly_d2v * b_poly_u;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                    dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+                    dp_2 = w[ii][jj] * b_poly_d2v * b_poly_u;
+                }
+            }
+        }
+        let dp_val: f64 = (
+            float_m * (float_m - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+            float_m * (float_m - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+            2.0 * float_m * float_m * dp_1 * w_sum_0 * w_sum_1 +
+            2.0 * float_m * float_m * dp_0 * w_sum_1 * w_sum_1
+        ) / w_sum_0.powf(3.0);
+        for k in 0..dim {
+            dp_mat[v_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdv2_dp_iso_v(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut dp_0: f64 = 0.0;
+        let mut dp_1: f64 = 0.0;
+        let mut dp_2: f64 = 0.0;
+        let mut w_sum_0: f64 = 0.0;
+        let mut w_sum_1: f64 = 0.0;
+        let mut w_sum_2: f64 = 0.0;
+        for jj in 0..m+1 {
+            let b_poly_v = bernstein_poly_rust(m, jj, v);
+            let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+            let b_poly_d2v = bernstein_poly_rust(m - 2, jj - 2, v) - 2.0 * bernstein_poly_rust(m - 2, jj - 1, v) + bernstein_poly_rust(m - 2, jj, v);
+            for ii in 0..n+1 {
+                let b_poly_u = bernstein_poly_rust(n, ii, u);
+                w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+                w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+                w_sum_2 += w[ii][jj] * b_poly_d2v * b_poly_u;
+                if ii == i && jj == j {
+                    dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                    dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+                    dp_2 = w[ii][jj] * b_poly_d2v * b_poly_u;
+                }
+            }
+        }
+        let dp_val: f64 = (
+            float_m * (float_m - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+            float_m * (float_m - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+            2.0 * float_m * float_m * dp_1 * w_sum_0 * w_sum_1 +
+            2.0 * float_m * float_m * dp_0 * w_sum_1 * w_sum_1
+        ) / w_sum_0.powf(3.0);
+        for k in 0..dim {
+            dp_mat[u_idx][k] = dp_val;
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_eval_dp_grid(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let mut dp_mat: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut w_sum: f64 = 0.0;
+            for ii in 0..n+1 {
+                for jj in 0..m+1 {
+                    w_sum += w[ii][jj] * bernstein_poly_rust(n, ii, u) * bernstein_poly_rust(m, jj, v);
+                }
+            }
+            let dp_val: f64 = w[i][j] * bernstein_poly_rust(n, i, u) * bernstein_poly_rust(m, j, v) / w_sum;
+            for k in 0..dim {
+                dp_mat[u_idx][v_idx][k] = dp_val;
+            }
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdu_dp_grid(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut dp_0: f64 = 0.0;
+            let mut dp_1: f64 = 0.0;
+            let mut w_sum_0: f64 = 0.0;
+            let mut w_sum_1: f64 = 0.0;
+            for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+                let b_poly_u = bernstein_poly_rust(n, ii, u);
+                let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+                for jj in 0..m+1 {
+                    let b_poly_v = bernstein_poly_rust(m, jj, v);
+                    w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+                    w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+                    if ii == i && jj == j {
+                        dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                        dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+                    }
+                }
+            }
+            let dp_val: f64 = float_n * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+            for k in 0..dim {
+                dp_mat[u_idx][v_idx][k] = dp_val;
+            }
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_dsdv_dp_grid(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut dp_0: f64 = 0.0;
+            let mut dp_1: f64 = 0.0;
+            let mut w_sum_0: f64 = 0.0;
+            let mut w_sum_1: f64 = 0.0;
+            for jj in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, jj, v);
+                let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+                for ii in 0..n+1 {
+                    let b_poly_u = bernstein_poly_rust(n, ii, u);
+                    w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+                    w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+                    if ii == i && jj == j {
+                        dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                        dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+                    }
+                }
+            }
+            let dp_val: f64 = float_m * (dp_1 * w_sum_0 - dp_0 * w_sum_1) / (w_sum_0 * w_sum_0);
+            for k in 0..dim {
+                dp_mat[u_idx][v_idx][k] = dp_val;
+            }
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdu2_dp_grid(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_n = n as f64;
+    let mut dp_mat: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut dp_0: f64 = 0.0;
+            let mut dp_1: f64 = 0.0;
+            let mut dp_2: f64 = 0.0;
+            let mut w_sum_0: f64 = 0.0;
+            let mut w_sum_1: f64 = 0.0;
+            let mut w_sum_2: f64 = 0.0;
+            for ii in 0..n+1 {  // Use a separate index nomenclature from the one specified as an argument
+                let b_poly_u = bernstein_poly_rust(n, ii, u);
+                let b_poly_du = bernstein_poly_rust(n - 1, ii - 1, u) - bernstein_poly_rust(n - 1, ii, u);
+                let b_poly_d2u = bernstein_poly_rust(n - 2, ii - 2, u) - 2.0 * bernstein_poly_rust(n - 2, ii - 1, u) + bernstein_poly_rust(n - 2, ii, u);
+                for jj in 0..m+1 {
+                    let b_poly_v = bernstein_poly_rust(m, jj, v);
+                    w_sum_0 += w[ii][jj] * b_poly_u * b_poly_v;
+                    w_sum_1 += w[ii][jj] * b_poly_du * b_poly_v;
+                    w_sum_2 += w[ii][jj] * b_poly_d2u * b_poly_v;
+                    if ii == i && jj == j {
+                        dp_0 = w[ii][jj] * b_poly_u * b_poly_v;
+                        dp_1 = w[ii][jj] * b_poly_du * b_poly_v;
+                        dp_2 = w[ii][jj] * b_poly_d2u * b_poly_v;
+                    }
+                }
+            }
+            let dp_val: f64 = (
+                float_n * (float_n - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+                float_n * (float_n - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+                2.0 * float_n * float_n * dp_1 * w_sum_0 * w_sum_1 +
+                2.0 * float_n * float_n * dp_0 * w_sum_1 * w_sum_1
+            ) / w_sum_0.powf(3.0);
+            for k in 0..dim {
+                dp_mat[u_idx][v_idx][k] = dp_val;
+            }
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
+fn rational_bezier_surf_d2sdv2_dp_grid(w: Vec<Vec<f64>>, i: usize, j: usize, n: usize, m: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_m = m as f64;
+    let mut dp_mat: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut dp_0: f64 = 0.0;
+            let mut dp_1: f64 = 0.0;
+            let mut dp_2: f64 = 0.0;
+            let mut w_sum_0: f64 = 0.0;
+            let mut w_sum_1: f64 = 0.0;
+            let mut w_sum_2: f64 = 0.0;
+            for jj in 0..m+1 {
+                let b_poly_v = bernstein_poly_rust(m, jj, v);
+                let b_poly_dv = bernstein_poly_rust(m - 1, jj - 1, v) - bernstein_poly_rust(m - 1, jj, v);
+                let b_poly_d2v = bernstein_poly_rust(m - 2, jj - 2, v) - 2.0 * bernstein_poly_rust(m - 2, jj - 1, v) + bernstein_poly_rust(m - 2, jj, v);
+                for ii in 0..n+1 {
+                    let b_poly_u = bernstein_poly_rust(n, ii, u);
+                    w_sum_0 += w[ii][jj] * b_poly_v * b_poly_u;
+                    w_sum_1 += w[ii][jj] * b_poly_dv * b_poly_u;
+                    w_sum_2 += w[ii][jj] * b_poly_d2v * b_poly_u;
+                    if ii == i && jj == j {
+                        dp_0 = w[ii][jj] * b_poly_v * b_poly_u;
+                        dp_1 = w[ii][jj] * b_poly_dv * b_poly_u;
+                        dp_2 = w[ii][jj] * b_poly_d2v * b_poly_u;
+                    }
+                }
+            }
+            let dp_val: f64 = (
+                float_m * (float_m - 1.0) * dp_2 * w_sum_0 * w_sum_0 - 
+                float_m * (float_m - 1.0) * dp_0 * w_sum_0 * w_sum_2 -
+                2.0 * float_m * float_m * dp_1 * w_sum_0 * w_sum_1 +
+                2.0 * float_m * float_m * dp_0 * w_sum_1 * w_sum_1
+            ) / w_sum_0.powf(3.0);
+            for k in 0..dim {
+                dp_mat[u_idx][v_idx][k] = dp_val;
+            }
+        }
+    }
+    Ok(dp_mat)
+}
+
+#[pyfunction]
 fn rational_bezier_surf_eval_iso_u(p: Vec<Vec<Vec<f64>>>, w: Vec<Vec<f64>>,
     u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
     let n = p.len() - 1;  // Degree in the u-direction
@@ -5615,6 +6252,26 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdv, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdu2, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdv2, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_eval_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdu_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdv_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdu2_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdv2_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_eval_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_eval_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdu_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdu_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdv_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdv_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdu2_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdu2_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdv2_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdv2_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_eval_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdu_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdv_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdu2_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(rational_bezier_surf_d2sdv2_dp_grid, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_surf_eval_iso_u, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_surf_eval_iso_v, m)?)?;
     m.add_function(wrap_pyfunction!(rational_bezier_surf_dsdu_iso_u, m)?)?;

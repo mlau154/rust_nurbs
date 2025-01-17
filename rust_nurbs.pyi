@@ -2011,6 +2011,674 @@ def rational_bezier_surf_d2sdv2(p: Iterable[Iterable[Iterable[float]]], w: Itera
         Value of the rational Bézier surface second derivative w.r.t. :math:`v` at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
     """
 
+def rational_bezier_surf_eval_dp(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface with respect to an individual control point at a given :math:`(u,v)`-pair:
+
+    .. math::
+
+        \frac{\partial}{\partial \mathbf{P}_{i,j}} \mathbf{S}(u,v) = \frac{B_{i,n}(u) B_{j,m}(v) w_{i,j}}{\sum\limits_{ii=0}^n \sum\limits_{jj=0}^m B_{ii,n}(u) B_{jj,m}(v) w_{ii,jj}}
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[float]
+        1-D list representing the surface sensitivity at :math:`(u,v)` to the control point :math:`\mathbf{P}_{i,j}`
+    """
+
+def rational_bezier_surf_dsdu_dp(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`u`-derivative with respect to an individual control point at a given :math:`(u,v)`-pair:
+
+    .. math::
+
+        \frac{\partial}{\partial \mathbf{P}_{i,j}} \left( \frac{\partial \mathbf{S}(u,v)}{\partial u} \right) = \frac{\frac{\partial f(u,v)}{\partial u} g(u,v) - f(u,v) \frac{\partial g(u,v)}{\partial u}}{g^2(u,v)}
+    
+    where
+
+    .. math::
+
+        \begin{align}
+            f(u,v) &= B_{i,n}(u) B_{j,m}(v) w_{i,j} \\
+            g(u,v) &= \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m B_{ii,n}(u) B_{jj,m}(v) w_{ii,jj} \\
+            \frac{\partial f(u,v)}{\partial u} &= n [B_{i-1,n-1}(u) - B_{i,n-1}(u)] B_{j,m}(v) w_{i,j} \\
+            \frac{\partial g(u,v)}{\partial u} &= n \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m [B_{ii-1,n-1}(u) - B_{ii,n-1}(u)] B_{jj,m}(v) w_{ii,jj}
+        \end{align}
+
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[float]
+        1-D list representing the surface derivative sensitivity at :math:`(u,v)` to the control point :math:`\mathbf{P}_{i,j}`
+    """
+
+def rational_bezier_surf_dsdv_dp(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`v`-derivative with respect to an individual control point at a given :math:`(u,v)`-pair:
+
+    .. math::
+
+        \frac{\partial}{\partial \mathbf{P}_{i,j}} \left( \frac{\partial \mathbf{S}(u,v)}{\partial v} \right) = \frac{\frac{\partial f(u,v)}{\partial v} g(u,v) - f(u,v) \frac{\partial g(u,v)}{\partial v}}{g^2(u,v)}
+    
+    where
+
+    .. math::
+
+        \begin{align}
+            f(u,v) &= B_{i,n}(u) B_{j,m}(v) w_{i,j} \\
+            g(u,v) &= \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m B_{ii,n}(u) B_{jj,m}(v) w_{ii,jj} \\
+            \frac{\partial f(u,v)}{\partial v} &= m B_{i,n}(u) [B_{j-1,m-1}(v) - B_{j,m-1}(v)] w_{i,j} \\
+            \frac{\partial g(u,v)}{\partial v} &= m \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m B_{ii,n}(u) [B_{jj-1,m-1}(v) - B_{jj,m-1}(v)] w_{ii,jj}
+        \end{align}
+
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[float]
+        1-D list representing the surface derivative sensitivity at :math:`(u,v)` to the control point :math:`\mathbf{P}_{i,j}`
+    """
+
+def rational_bezier_surf_d2sdu2_dp(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`u`-derivative with respect to an individual control point at a given :math:`(u,v)`-pair:
+
+    .. math::
+
+        \frac{\partial}{\partial \mathbf{P}_{i,j}} \left( \frac{\partial^2 \mathbf{S}(u,v)}{\partial u^2} \right) = \frac{\frac{\partial^2 f(u,v)}{\partial u^2} g^2(u, v) - f(u, v)g(u, v)\frac{\partial^2 g(u,v)}{\partial u^2} - 2\frac{\partial f(u,v)}{\partial u} g(u,v) \frac{\partial g(u,v)}{\partial u} + 2f(u, v)\left[ \frac{\partial g(u,v)}{\partial u} \right]^2}{g^3(u, v)}
+    
+    where
+
+    .. math::
+
+        \begin{align}
+            f(u,v) &= B_{i,n}(u) B_{j,m}(v) w_{i,j} \\
+            g(u,v) &= \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m B_{ii,n}(u) B_{jj,m}(v) w_{ii,jj} \\
+            \frac{\partial f(u,v)}{\partial u} &= n [B_{i-1,n-1}(u) - B_{i,n-1}(u)] B_{j,m}(v) w_{i,j} \\
+            \frac{\partial g(u,v)}{\partial u} &= n \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m [B_{ii-1,n-1}(u) - B_{ii,n-1}(u)] B_{jj,m}(v) w_{ii,jj} \\
+            \frac{\partial^2 f(u,v)}{\partial u^2} &= n(n-1) [B_{i-2,n-2}(u) - 2 B_{i-1,n-2}(u) + B_{i,n-2}(u)] B_{j,m}(v) w_{i,j} \\
+            \frac{\partial^2 g(u,v)}{\partial u^2} &= n(n-1) \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m [B_{ii-2,n-2}(u)-2B_{ii-1,n-2}(u) + B_{ii,n-2}(u)] B_{jj,m}(v) w_{ii,jj}
+        \end{align}
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[float]
+        1-D list representing the surface derivative sensitivity at :math:`(u,v)` to the control point :math:`\mathbf{P}_{i,j}`
+    """
+
+def rational_bezier_surf_d2sdv2_dp(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`v`-derivative with respect to an individual control point at a given :math:`(u,v)`-pair:
+
+    .. math::
+
+        \frac{\partial}{\partial \mathbf{P}_{i,j}} \left( \frac{\partial^2 \mathbf{S}(u,v)}{\partial v^2} \right) = \frac{\frac{\partial^2 f(u,v)}{\partial v^2} g^2(u, v) - f(u, v)g(u, v)\frac{\partial^2 g(u,v)}{\partial v^2} - 2\frac{\partial f(u,v)}{\partial v} g(u,v) \frac{\partial g(u,v)}{\partial v} + 2f(u, v)\left[ \frac{\partial g(u,v)}{\partial v} \right]^2}{g^3(u, v)}
+    
+    where
+
+    .. math::
+
+        \begin{align}
+            f(u,v) &= B_{i,n}(u) B_{j,m}(v) w_{i,j} \\
+            g(u,v) &= \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m B_{ii,n}(u) B_{jj,m}(v) w_{ii,jj} \\
+            \frac{\partial f(u,v)}{\partial v} &= m B_{i,n}(u) [B_{j-1,m-1}(v) - B_{j,m-1}(v)] w_{i,j} \\
+            \frac{\partial g(u,v)}{\partial v} &= m \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m B_{ii,n}(u) [B_{jj-1,m-1}(v) - B_{jj,m-1}(v)] w_{ii,jj} \\
+            \frac{\partial^2 f(u,v)}{\partial v^2} &= m(m-1) B_{i,n}(u) [B_{j-2,m-2}(v) - 2 B_{j-1,m-2}(v) + B_{j,m-2}(v)] w_{i,j} \\
+            \frac{\partial^2 g(u,v)}{\partial v^2} &= m(m-1) \sum\limits_{ii=0}^n \sum\limits_{jj=0}^m  B_{ii,n}(u) [B_{jj-2,m-2}(v)-2B_{jj-1,m-2}(v) + B_{jj,m-2}(v)] w_{ii,jj}
+        \end{align}
+
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[float]
+        1-D list representing the surface derivative sensitivity at :math:`(u,v)` to the control point :math:`\mathbf{P}_{i,j}`
+    """
+
+def rational_bezier_surf_eval_dp_iso_u(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface with respect to an individual control point along a :math:`u`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface sensitiviies
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_eval_dp_iso_v(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface with respect to an individual control point along a :math:`v`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface sensitivities
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_dsdu_dp_iso_u(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`u`-derivative with respect to an individual control point along a :math:`u`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface sensitiviies
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_dsdu_dp_iso_v(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`u`-derivative with respect to an individual control point along a :math:`v`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface sensitivities
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_dsdv_dp_iso_u(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`v`-derivative with respect to an individual control point along a :math:`u`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface sensitiviies
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_dsdv_dp_iso_v(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`v`-derivative with respect to an individual control point along a :math:`v`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface sensitivities
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_d2sdu2_dp_iso_u(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`u`-derivative with respect to an individual control point along a :math:`u`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface sensitiviies
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_d2sdu2_dp_iso_v(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`u`-derivative with respect to an individual control point along a :math:`v`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface sensitivities
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_d2sdv2_dp_iso_u(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, u: float, nv: int) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`v`-derivative with respect to an individual control point along a :math:`u`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface sensitivity
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface sensitiviies
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_d2sdv2_dp_iso_v(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, v: float) -> List[List[float]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`v`-derivative with respect to an individual control point along a :math:`v`-isoparametric curve
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface sensitivities
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface sensitivity
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_eval_dp_grid(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface with respect to an individual control point on a :math:`(u,v)` grid
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface sensitiviies
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface sensitiviies
+
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_dsdu_dp_grid(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`u`-derivative with respect to an individual control point on a :math:`(u,v)` grid
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface derivative sensitiviies
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface derivative sensitiviies
+
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_dsdv_dp_grid(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface first :math:`v`-derivative with respect to an individual control point on a :math:`(u,v)` grid
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface derivative sensitiviies
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface derivative sensitiviies
+
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_d2sdu2_dp_grid(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`u`-derivative with respect to an individual control point on a :math:`(u,v)` grid
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface derivative sensitiviies
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface derivative sensitiviies
+
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def rational_bezier_surf_d2sdv2_dp_grid(w: Iterable[Iterable[float]], i: int, j: int, n: int, m: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the derivative of the rational Bézier surface second :math:`v`-derivative with respect to an individual control point on a :math:`(u,v)` grid
+    
+    Parameters
+    ----------
+    w: Iterable[Iterable[float]]
+        2-D list or array of weights corresponding to each of control points. The size of the array must be
+        equal to the size of the first two dimensions of ``p`` (:math:`n+1 \times m+1`)
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    n: int
+        Degree of the surface in the :math:`u`-direction
+    m: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly-spaced :math:`u`-values at which to evaluate the surface derivative sensitiviies
+    nv: int
+        Number of linearly-spaced :math:`v`-values at which to evaluate the surface derivative sensitiviies
+
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
 def rational_bezier_surf_eval_iso_u(p: Iterable[Iterable[Iterable[float]]], w: Iterable[Iterable[float]],
                                     u: float, nv: int) -> List[List[float]]:
     r"""

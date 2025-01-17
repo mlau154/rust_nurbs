@@ -1440,6 +1440,566 @@ def test_rational_bezier_surf_d2sdv2():
     assert second_deriv.shape == (3,)
 
 
+def test_rational_bezier_surf_eval_dp():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_eval(p, w, u, v))
+    surf_dp_exact = np.array(rational_bezier_surf_eval_dp(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_eval(p, w, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdu_dp():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdu(p, w, u, v))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdu_dp(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdu(p, w, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdv_dp():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdv(p, w, u, v))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdv_dp(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdv(p, w, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdu2_dp():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdu2(p, w, u, v))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdu2_dp(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdu2(p, w, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdv2_dp():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdv2(p, w, u, v))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdv2_dp(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdv2(p, w, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_eval_dp_iso_u():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_eval_iso_u(p, w, u, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_eval_dp_iso_u(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_eval_iso_u(p, w, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_eval_dp_iso_v():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, v = 20, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_eval_iso_v(p, w, nu, v))
+    surf_dp_exact = np.array(rational_bezier_surf_eval_dp_iso_v(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_eval_iso_v(p, w, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdu_dp_iso_u():
+    """
+    Evaluates the first derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdu_iso_u(p, w, u, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdu_dp_iso_u(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdu_iso_u(p, w, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdu_dp_iso_v():
+    """
+    Evaluates the first derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, v = 20, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdu_iso_v(p, w, nu, v))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdu_dp_iso_v(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdu_iso_v(p, w, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdv_dp_iso_u():
+    """
+    Evaluates the first derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdv_iso_u(p, w, u, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdv_dp_iso_u(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdv_iso_u(p, w, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdv_dp_iso_v():
+    """
+    Evaluates the first derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, v = 20, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdv_iso_v(p, w, nu, v))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdv_dp_iso_v(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdv_iso_v(p, w, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdu2_dp_iso_u():
+    """
+    Evaluates the second derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdu2_iso_u(p, w, u, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdu2_dp_iso_u(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdu2_iso_u(p, w, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdu2_dp_iso_v():
+    """
+    Evaluates the second derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, v = 20, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdu2_iso_v(p, w, nu, v))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdu2_dp_iso_v(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdu2_iso_v(p, w, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdv2_dp_iso_u():
+    """
+    Evaluates the second derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdv2_iso_u(p, w, u, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdv2_dp_iso_u(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdv2_iso_u(p, w, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdv2_dp_iso_v():
+    """
+    Evaluates the second derivative sensitivity with respect to a given control point location along an isoparametric curve and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, v = 20, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdv2_iso_v(p, w, nu, v))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdv2_dp_iso_v(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdv2_iso_v(p, w, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_eval_dp_grid():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location on a :math:`(u,v)` grid and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_eval_grid(p, w, nu, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_eval_dp_grid(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_eval_grid(p, w, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdu_dp_grid():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location on a :math:`(u,v)` grid and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdu_grid(p, w, nu, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdu_dp_grid(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdu_grid(p, w, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_dsdv_dp_grid():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location on a :math:`(u,v)` grid and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_dsdv_grid(p, w, nu, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_dsdv_dp_grid(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_dsdv_grid(p, w, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdu2_dp_grid():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location on a :math:`(u,v)` grid and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdu2_grid(p, w, nu, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdu2_dp_grid(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdu2_grid(p, w, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_rational_bezier_surf_d2sdv2_dp_grid():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location on a :math:`(u,v)` grid and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.2, 1.0], [0.3, 0.5, 1.0], [0.6, -0.4, 1.0], [1.2, 0.5, 1.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]]
+    ])
+    w = np.array([
+        [1.0, 0.9, 0.8, 1.0],
+        [1.0, 1.2, 0.7, 1.0],
+        [1.0, 0.3, 1.5, 1.0]
+    ])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(rational_bezier_surf_d2sdv2_grid(p, w, nu, nv))
+    surf_dp_exact = np.array(rational_bezier_surf_d2sdv2_dp_grid(w, i, j, p.shape[0] - 1, p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(rational_bezier_surf_d2sdv2_grid(p, w, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
 def test_rational_bezier_surf_eval_iso_u():
     """
     Evaluates a 2x3 rational Bézier surface along a :math:`u`-isoparametric curve
