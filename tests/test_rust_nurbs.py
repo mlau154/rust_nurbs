@@ -3678,10 +3678,20 @@ def test_nurbs_surf_d2sdu2():
     ku = np.array([0.0, 0.0, 0.0, 0.6, 1.0, 1.0, 1.0])
     kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
     assert p.shape[:2] == w.shape
-    second_deriv = np.array(nurbs_surf_d2sdu2(p, w, ku, kv, 0.3, 0.9))
+    u = 0.3
+    v = 0.9
+    second_deriv = np.array(nurbs_surf_d2sdu2(p, w, ku, kv, u, v))
     assert second_deriv.shape == (3,)
     assert len(ku) - len(p) - 1 == 2  # Degree in the u-direction (q)
     assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
+
+    # Validate using finite difference
+    step = 1e-5
+    second_deriv_hplus = np.array(nurbs_surf_eval(p, w, ku, kv, u + step, v))
+    second_deriv_0 = np.array(nurbs_surf_eval(p, w, ku, kv, u, v))
+    second_deriv_hminus = np.array(nurbs_surf_eval(p, w, ku, kv, u - step, v))
+    fpp = (second_deriv_hminus - 2.0 * second_deriv_0 + second_deriv_hplus) / (step**2)
+    assert np.all(np.isclose(fpp, second_deriv))
 
 
 def test_nurbs_surf_d2sdv2():
@@ -3705,10 +3715,20 @@ def test_nurbs_surf_d2sdv2():
     ku = np.array([0.0, 0.0, 0.0, 0.6, 1.0, 1.0, 1.0])
     kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
     assert p.shape[:2] == w.shape
-    second_deriv = np.array(nurbs_surf_d2sdv2(p, w, ku, kv, 0.3, 0.9))
+    u = 0.3
+    v = 0.9
+    second_deriv = np.array(nurbs_surf_d2sdv2(p, w, ku, kv, u, v))
     assert second_deriv.shape == (3,)
     assert len(ku) - len(p) - 1 == 2  # Degree in the u-direction (q)
     assert len(kv) - len(p[0]) - 1 == 2  # Degree in the v-direction (r)
+
+    # Validate using finite difference
+    step = 1e-5
+    second_deriv_hplus = np.array(nurbs_surf_eval(p, w, ku, kv, u, v + step))
+    second_deriv_0 = np.array(nurbs_surf_eval(p, w, ku, kv, u, v))
+    second_deriv_hminus = np.array(nurbs_surf_eval(p, w, ku, kv, u, v - step))
+    fpp = (second_deriv_hminus - 2.0 * second_deriv_0 + second_deriv_hplus) / (step**2)
+    assert np.all(np.isclose(fpp, second_deriv))
 
 
 def test_nurbs_surf_eval_iso_u():
