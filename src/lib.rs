@@ -51,7 +51,7 @@ fn bezier_curve_d2cdt2(p: Vec<Vec<f64>>, t: f64) -> PyResult<Vec<f64>> {
     for i in 0..n-1 {
         let b_poly = bernstein_poly_rust(n - 2, i, t);
         for j in 0..dim {
-            evaluated_deriv[j] += float_n * (float_n + 1.0) * (p[i + 2][j] - 2.0 * p[i + 1][j] + p[i][j]) * b_poly;
+            evaluated_deriv[j] += float_n * (float_n - 1.0) * (p[i + 2][j] - 2.0 * p[i + 1][j] + p[i][j]) * b_poly;
         }
     }
     Ok(evaluated_deriv)
@@ -103,7 +103,7 @@ fn bezier_curve_d2cdt2_grid(p: Vec<Vec<f64>>, nt: usize) -> PyResult<Vec<Vec<f64
         for i in 0..n-1 {
             let b_poly = bernstein_poly_rust(n - 2, i, t);
             for j in 0..dim {
-                evaluated_derivs[t_idx][j] += float_n * (float_n + 1.0) * (p[i + 2][j] - 2.0 * p[i + 1][j] + p[i][j]) * b_poly;
+                evaluated_derivs[t_idx][j] += float_n * (float_n - 1.0) * (p[i + 2][j] - 2.0 * p[i + 1][j] + p[i][j]) * b_poly;
             }
         }
     }
@@ -156,7 +156,7 @@ fn bezier_curve_d2cdt2_tvec(p: Vec<Vec<f64>>, t: Vec<f64>) -> PyResult<Vec<Vec<f
         for i in 0..n-1 {
             let b_poly = bernstein_poly_rust(n - 2, i, t[t_idx]);
             for j in 0..dim {
-                evaluated_derivs[t_idx][j] += float_n * (float_n + 1.0) * (p[i + 2][j] - 2.0 * p[i + 1][j] + p[i][j]) * b_poly;
+                evaluated_derivs[t_idx][j] += float_n * (float_n - 1.0) * (p[i + 2][j] - 2.0 * p[i + 1][j] + p[i][j]) * b_poly;
             }
         }
     }

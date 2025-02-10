@@ -60,8 +60,16 @@ def test_bezier_curve_dcdt():
         [0.7, 0.1, 0.5],
         [1.0, 0.1, 0.3]
     ])
-    first_deriv = np.array(bezier_curve_dcdt(p, 0.1))
+    t = 0.1
+    first_deriv = np.array(bezier_curve_dcdt(p, t))
     assert first_deriv.shape == (3,)
+
+    # Validate using finite difference
+    step = 1e-8
+    first_deriv_hplus = np.array(bezier_curve_eval(p, t + step))
+    first_deriv_0 = np.array(bezier_curve_eval(p, t))
+    fp = (first_deriv_hplus - first_deriv_0) / step
+    assert np.all(np.isclose(fp, first_deriv))
 
 
 def test_bezier_curve_d2cdt2():
@@ -86,8 +94,17 @@ def test_bezier_curve_d2cdt2():
         [0.7, 0.1, 0.5],
         [1.0, 0.1, 0.3]
     ])
-    second_deriv = np.array(bezier_curve_d2cdt2(p, 0.1))
+    t = 0.1
+    second_deriv = np.array(bezier_curve_d2cdt2(p, t))
     assert second_deriv.shape == (3,)
+
+    # Validate using finite difference
+    step = 1e-5
+    second_deriv_hplus = np.array(bezier_curve_eval(p, t + step))
+    second_deriv_0 = np.array(bezier_curve_eval(p, t))
+    second_deriv_hminus = np.array(bezier_curve_eval(p, t - step))
+    fpp = (second_deriv_hminus - 2.0 * second_deriv_0 + second_deriv_hplus) / (step**2)
+    assert np.all(np.isclose(fpp, second_deriv))
 
 
 def test_bezier_curve_eval_grid():
