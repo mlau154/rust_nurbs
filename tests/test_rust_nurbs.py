@@ -38,6 +38,27 @@ def test_bezier_curve_eval():
     assert curve_point.shape == (3,)
 
 
+def test_bezier_curve_eval_dp():
+    """
+    Evaluates the curve sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array(
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+    )
+    t = 0.4
+    i = 1
+    curve_eval_1 = np.array(bezier_curve_eval(p, t))
+    curve_dp_exact = np.array(bezier_curve_eval_dp(i, p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bezier_curve_eval(p, t))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_bezier_curve_dcdt():
     """
     Evaluates sample 2-D and 3-D Bézier curve first derivatives at a point and ensures
@@ -70,6 +91,27 @@ def test_bezier_curve_dcdt():
     first_deriv_0 = np.array(bezier_curve_eval(p, t))
     fp = (first_deriv_hplus - first_deriv_0) / step
     assert np.all(np.isclose(fp, first_deriv))
+
+
+def test_bezier_curve_dcdt_dp():
+    """
+    Evaluates the curve first derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array(
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+    )
+    t = 0.4
+    i = 1
+    curve_dcdt_1 = np.array(bezier_curve_dcdt(p, t))
+    curve_dp_exact = np.array(bezier_curve_dcdt_dp(i, p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_dcdt_2 = np.array(bezier_curve_dcdt(p, t))
+    curve_dp_approx = (curve_dcdt_2 - curve_dcdt_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_bezier_curve_d2cdt2():
@@ -107,6 +149,27 @@ def test_bezier_curve_d2cdt2():
     assert np.all(np.isclose(fpp, second_deriv))
 
 
+def test_bezier_curve_d2cdt2_dp():
+    """
+    Evaluates the curve second derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array(
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+    )
+    t = 0.4
+    i = 1
+    curve_d2cdt2_1 = np.array(bezier_curve_d2cdt2(p, t))
+    curve_dp_exact = np.array(bezier_curve_d2cdt2_dp(i, p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_d2cdt2_2 = np.array(bezier_curve_d2cdt2(p, t))
+    curve_dp_approx = (curve_d2cdt2_2 - curve_d2cdt2_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_bezier_curve_eval_grid():
     """
     Evaluates sample 2-D and 3-D Bézier curves along a grid with 50 :math:`t`-values and ensures
@@ -131,6 +194,28 @@ def test_bezier_curve_eval_grid():
     ])
     curve_point = np.array(bezier_curve_eval_grid(p, 50))
     assert curve_point.shape == (50, 3)
+
+
+def test_bezier_curve_eval_dp_grid():
+    """
+    Evaluates the curve sensitivity at several linearly-spaced points in :math:`t`
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]    
+    ])
+    nt = 100
+    i = 1
+    curve_eval_1 = np.array(bezier_curve_eval_grid(p, nt))
+    curve_dp_exact = np.array(bezier_curve_eval_dp_grid(i, p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bezier_curve_eval_grid(p, nt))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_bezier_curve_dcdt_grid():
@@ -159,6 +244,28 @@ def test_bezier_curve_dcdt_grid():
     assert first_deriv.shape == (50, 3)
 
 
+def test_bezier_curve_dcdt_dp_grid():
+    """
+    Evaluates the first derivative sensitivity at several linearly-spaced points in :math:`t`
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0],
+    ])
+    nt = 100
+    i = 1
+    curve_eval_1 = np.array(bezier_curve_dcdt_grid(p, nt))
+    curve_dp_exact = np.array(bezier_curve_dcdt_dp_grid(i, p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bezier_curve_dcdt_grid(p, nt))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_bezier_curve_d2cdt2_grid():
     """
     Evaluates sample 2-D and 3-D Bézier curve second derivatives along a grid with 50 :math:`t`-values and ensures
@@ -183,6 +290,28 @@ def test_bezier_curve_d2cdt2_grid():
     ])
     second_deriv = np.array(bezier_curve_d2cdt2_grid(p, 50))
     assert second_deriv.shape == (50, 3)
+
+
+def test_bezier_curve_d2cdt2_dp_grid():
+    """
+    Evaluates the second derivative sensitivity at several linearly-spaced points in :math:`t`
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0],
+    ])
+    nt = 100
+    i = 1
+    curve_eval_1 = np.array(bezier_curve_d2cdt2_grid(p, nt))
+    curve_dp_exact = np.array(bezier_curve_d2cdt2_dp_grid(i, p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-7
+    p[i, :] += step
+    curve_eval_2 = np.array(bezier_curve_d2cdt2_grid(p, nt))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_bezier_curve_eval_tvec():
@@ -212,6 +341,28 @@ def test_bezier_curve_eval_tvec():
     assert curve_point.shape == (t_vec.shape[0], 3)
 
 
+def test_bezier_curve_eval_dp_tvec():
+    r"""
+    Evaluates the curve sensitivity along parameter vector :math:`\mathbf{t}`
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]    
+    ])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 1
+    curve_eval_1 = np.array(bezier_curve_eval_tvec(p, t_vec))
+    curve_dp_exact = np.array(bezier_curve_eval_dp_tvec(i, p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bezier_curve_eval_tvec(p, t_vec))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_bezier_curve_dcdt_tvec():
     """
     Evaluates sample 2-D and 3-D Bézier curve first derivatives along a vector of 50 :math:`t`-values and ensures
@@ -239,6 +390,29 @@ def test_bezier_curve_dcdt_tvec():
     assert first_deriv.shape == (t_vec.shape[0], 3)
 
 
+def test_bezier_curve_dcdt_dp_tvec():
+    r"""
+    Evaluates the first derivative sensitivity along parameter vector :math:`\mathbf{t}`
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0],
+    ])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 1
+    curve_eval_1 = np.array(bezier_curve_dcdt_tvec(p, t_vec))
+    curve_dp_exact = np.array(bezier_curve_dcdt_dp_tvec(i, p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bezier_curve_dcdt_tvec(p, t_vec))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
+
 def test_bezier_curve_d2cdt2_tvec():
     """
     Evaluates sample 2-D and 3-D Bézier curve second derivatives along a vector of 50 :math:`t`-values and ensures
@@ -264,6 +438,28 @@ def test_bezier_curve_d2cdt2_tvec():
     ])
     second_deriv = np.array(bezier_curve_d2cdt2_tvec(p, t_vec))
     assert second_deriv.shape == (t_vec.shape[0], 3)
+
+
+def test_bezier_curve_d2cdt2_dp_tvec():
+    r"""
+    Evaluates the second derivative sensitivity along parameter vector :math:`\mathbf{t}`
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0],
+    ])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 1
+    curve_eval_1 = np.array(bezier_curve_d2cdt2_tvec(p, t_vec))
+    curve_dp_exact = np.array(bezier_curve_d2cdt2_dp_tvec(i, p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-7
+    p[i, :] += step
+    curve_eval_2 = np.array(bezier_curve_d2cdt2_tvec(p, t_vec))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_bezier_surf_eval():

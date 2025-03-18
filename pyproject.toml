@@ -23,5 +23,8 @@ dev = [
     "maturin", 
     "pytest",
     "numpy>=1.8",
-    "tox"
+    "tox",
+    "pydata-sphinx-theme",
+    "sphinx-design",
+    "sphinx-autoapi"
 ]

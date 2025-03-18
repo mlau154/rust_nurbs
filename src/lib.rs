@@ -28,6 +28,13 @@ fn bezier_curve_eval(p: Vec<Vec<f64>>, t: f64) -> PyResult<Vec<f64>> {
 }
 
 #[pyfunction]
+fn bezier_curve_eval_dp(i: usize, n: usize, dim: usize, t: f64) -> PyResult<Vec<f64>> {
+    let eval_dp: f64 = bernstein_poly_rust(n, i, t);
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
 fn bezier_curve_dcdt(p: Vec<Vec<f64>>, t: f64) -> PyResult<Vec<f64>> {
     let n = p.len() - 1;
     let float_n = n as f64;
@@ -40,6 +47,14 @@ fn bezier_curve_dcdt(p: Vec<Vec<f64>>, t: f64) -> PyResult<Vec<f64>> {
         }
     }
     Ok(evaluated_deriv)
+}
+
+#[pyfunction]
+fn bezier_curve_dcdt_dp(i: usize, n: usize, dim: usize, t: f64) -> PyResult<Vec<f64>> {
+    let float_n = n as f64;
+    let eval_dp: f64 = float_n * (bernstein_poly_rust(n - 1, i - 1, t) - bernstein_poly_rust(n - 1, i, t));
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
 }
 
 #[pyfunction]
@@ -58,6 +73,14 @@ fn bezier_curve_d2cdt2(p: Vec<Vec<f64>>, t: f64) -> PyResult<Vec<f64>> {
 }
 
 #[pyfunction]
+fn bezier_curve_d2cdt2_dp(i: usize, n: usize, dim: usize, t: f64) -> PyResult<Vec<f64>> {
+    let float_n = n as f64;
+    let eval_dp: f64 = float_n * (float_n - 1.0) * (bernstein_poly_rust(n - 2, i - 2, t) - 2.0 * bernstein_poly_rust(n - 2, i - 1, t) + bernstein_poly_rust(n - 2, i, t));
+    let dp_vec: Vec<f64> = vec![eval_dp; dim];
+    Ok(dp_vec)
+}
+
+#[pyfunction]
 fn bezier_curve_eval_grid(p: Vec<Vec<f64>>, nt: usize) -> PyResult<Vec<Vec<f64>>> {
     let n = p.len() - 1;
     let dim = p[0].len();
@@ -69,6 +92,19 @@ fn bezier_curve_eval_grid(p: Vec<Vec<f64>>, nt: usize) -> PyResult<Vec<Vec<f64>>
             for j in 0..dim {
                 evaluated_points[t_idx][j] += p[i][j] * b_poly;
             }
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bezier_curve_eval_dp_grid(i: usize, n: usize, dim: usize, nt: usize) -> PyResult<Vec<Vec<f64>>> {
+    let mut evaluated_points: Vec<Vec<f64>> = vec![vec![0.0; dim]; nt];
+    for t_idx in 0..nt {
+        let t = (t_idx as f64) * 1.0 / (nt as f64 - 1.0);
+        let b_poly = bernstein_poly_rust(n, i, t);
+        for j in 0..dim {
+            evaluated_points[t_idx][j] = b_poly;
         }
     }
     Ok(evaluated_points)
@@ -93,6 +129,19 @@ fn bezier_curve_dcdt_grid(p: Vec<Vec<f64>>, nt: usize) -> PyResult<Vec<Vec<f64>>
 }
 
 #[pyfunction]
+fn bezier_curve_dcdt_dp_grid(i: usize, n: usize, dim: usize, nt: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nt];
+    for t_idx in 0..nt {
+        let t = (t_idx as f64) * 1.0 / (nt as f64 - 1.0);
+        for j in 0..dim {
+            evaluated_derivs[t_idx][j] = float_n * (bernstein_poly_rust(n - 1, i - 1, t) - bernstein_poly_rust(n - 1, i, t));
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
 fn bezier_curve_d2cdt2_grid(p: Vec<Vec<f64>>, nt: usize) -> PyResult<Vec<Vec<f64>>> {
     let n = p.len() - 1;
     let float_n = n as f64;
@@ -111,6 +160,19 @@ fn bezier_curve_d2cdt2_grid(p: Vec<Vec<f64>>, nt: usize) -> PyResult<Vec<Vec<f64
 }
 
 #[pyfunction]
+fn bezier_curve_d2cdt2_dp_grid(i: usize, n: usize, dim: usize, nt: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nt];
+    for t_idx in 0..nt {
+        let t = (t_idx as f64) * 1.0 / (nt as f64 - 1.0);
+        for j in 0..dim {
+            evaluated_derivs[t_idx][j] = float_n * (float_n - 1.0) * (bernstein_poly_rust(n - 2, i - 2, t) - 2.0 * bernstein_poly_rust(n - 2, i - 1, t) + bernstein_poly_rust(n - 2, i, t));
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
 fn bezier_curve_eval_tvec(p: Vec<Vec<f64>>, t: Vec<f64>) -> PyResult<Vec<Vec<f64>>> {
     let n = p.len() - 1;
     let nt = t.len();
@@ -122,6 +184,19 @@ fn bezier_curve_eval_tvec(p: Vec<Vec<f64>>, t: Vec<f64>) -> PyResult<Vec<Vec<f64
             for j in 0..dim {
                 evaluated_points[t_idx][j] += p[i][j] * b_poly;
             }
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bezier_curve_eval_dp_tvec(i: usize, n: usize, dim: usize, t: Vec<f64>) -> PyResult<Vec<Vec<f64>>> {
+    let nt = t.len();
+    let mut evaluated_points: Vec<Vec<f64>> = vec![vec![0.0; dim]; nt];
+    for t_idx in 0..nt {
+        let b_poly = bernstein_poly_rust(n, i, t[t_idx]);
+        for j in 0..dim {
+            evaluated_points[t_idx][j] = b_poly;
         }
     }
     Ok(evaluated_points)
@@ -146,6 +221,19 @@ fn bezier_curve_dcdt_tvec(p: Vec<Vec<f64>>, t: Vec<f64>) -> PyResult<Vec<Vec<f64
 }
 
 #[pyfunction]
+fn bezier_curve_dcdt_dp_tvec(i: usize, n: usize, dim: usize, t: Vec<f64>) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let nt = t.len();
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nt];
+    for t_idx in 0..nt {
+        for j in 0..dim {
+            evaluated_derivs[t_idx][j] = float_n * (bernstein_poly_rust(n - 1, i - 1, t[t_idx]) - bernstein_poly_rust(n - 1, i, t[t_idx]));
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
 fn bezier_curve_d2cdt2_tvec(p: Vec<Vec<f64>>, t: Vec<f64>) -> PyResult<Vec<Vec<f64>>> {
     let n = p.len() - 1;
     let float_n = n as f64;
@@ -158,6 +246,19 @@ fn bezier_curve_d2cdt2_tvec(p: Vec<Vec<f64>>, t: Vec<f64>) -> PyResult<Vec<Vec<f
             for j in 0..dim {
                 evaluated_derivs[t_idx][j] += float_n * (float_n - 1.0) * (p[i + 2][j] - 2.0 * p[i + 1][j] + p[i][j]) * b_poly;
             }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bezier_curve_d2cdt2_dp_tvec(i: usize, n: usize, dim: usize, t: Vec<f64>) -> PyResult<Vec<Vec<f64>>> {
+    let float_n = n as f64;
+    let nt = t.len();
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nt];
+    for t_idx in 0..nt {
+        for j in 0..dim {
+            evaluated_derivs[t_idx][j] = float_n * (float_n - 1.0) * (bernstein_poly_rust(n - 2, i - 2, t[t_idx]) - 2.0 * bernstein_poly_rust(n - 2, i - 1, t[t_idx]) + bernstein_poly_rust(n - 2, i, t[t_idx]));
         }
     }
     Ok(evaluated_derivs)
@@ -6185,14 +6286,23 @@ fn nurbs_surf_d2sdv2_uvvecs(p: Vec<Vec<Vec<f64>>>, w: Vec<Vec<f64>>,
 fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bernstein_poly, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_eval, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_eval_dp, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_dcdt, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_dcdt_dp, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_d2cdt2, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_d2cdt2_dp, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_eval_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_eval_dp_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_dcdt_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_dcdt_dp_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_d2cdt2_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_d2cdt2_dp_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_eval_tvec, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_eval_dp_tvec, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_dcdt_tvec, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_dcdt_dp_tvec, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_curve_d2cdt2_tvec, m)?)?;
+    m.add_function(wrap_pyfunction!(bezier_curve_d2cdt2_dp_tvec, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_eval, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_dsdu, m)?)?;
     m.add_function(wrap_pyfunction!(bezier_surf_dsdv, m)?)?;
