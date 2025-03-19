@@ -3982,6 +3982,158 @@ fn bspline_surf_d2sdv2(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, u: f64
 }
 
 #[pyfunction]
+fn bspline_surf_eval_dp(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_point: Vec<f64> = vec![0.0; dim];
+    let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+    let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+    let bspline_basis_prod = bspline_basis_u * bspline_basis_v;
+    for k in 0..dim {
+        evaluated_point[k] = bspline_basis_prod;
+    }
+    Ok(evaluated_point)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdu_dp(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    let mut ka: f64 = 0.0;
+    let mut kb: f64 = 0.0;
+    let span_a: f64 = ku[i + q] - ku[i];
+    let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+    if span_a != 0.0 {
+        ka = 1.0 / span_a;
+    }
+    if span_b != 0.0 {
+        kb = 1.0 / span_b;
+    }
+    let bspline_basis_du = ka * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i, u) - kb * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i + 1, u);
+    let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+    let bspline_basis_prod = bspline_basis_du * bspline_basis_v;
+    for k in 0..dim {
+        evaluated_deriv[k] = float_q * bspline_basis_prod;
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdv_dp(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    let mut ka: f64 = 0.0;
+    let mut kb: f64 = 0.0;
+    let span_a: f64 = kv[j + r] - kv[j];
+    let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+    if span_a != 0.0 {
+        ka = 1.0 / span_a;
+    }
+    if span_b != 0.0 {
+        kb = 1.0 / span_b;
+    }
+    let bspline_basis_dv = ka * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j, v) - kb * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j + 1, v);
+    let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+    let bspline_basis_prod = bspline_basis_u * bspline_basis_dv;
+    for k in 0..dim {
+        evaluated_deriv[k] = float_r * bspline_basis_prod;
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdu2_dp(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    if q < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_deriv);
+    }
+    let mut ka: f64 = 0.0;
+    let mut kb: f64 = 0.0;
+    let mut kc: f64 = 0.0;
+    let mut kd: f64 = 0.0;
+    let mut ke: f64 = 0.0;
+    let span_a: f64 = ku[i + q] - ku[i];
+    let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+    let span_c: f64 = ku[i + q - 1] - ku[i];
+    let span_d: f64 = ku[i + q] - ku[i + 1];
+    let span_e: f64 = ku[i + q + 1] - ku[i + 2];
+    if span_a != 0.0 {
+        ka = 1.0 / span_a;
+    }
+    if span_b != 0.0 {
+        kb = 1.0 / span_b;
+    }
+    if span_c != 0.0 {
+        kc = 1.0 / span_c;
+    }
+    if span_d != 0.0 {
+        kd = 1.0 / span_d;
+    }
+    if span_e != 0.0 {
+        ke = 1.0 / span_e;
+    }
+    let bspline_basis_d = kd * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 1, u);
+    let bspline_basis_d2u = ka * (kc * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i, u) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 2, u));
+    let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+    let bspline_basis_prod = bspline_basis_d2u * bspline_basis_v;
+    for k in 0..dim {
+        evaluated_deriv[k] = float_q * (float_q - 1.0) * bspline_basis_prod;
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdv2_dp(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, v: f64) -> PyResult<Vec<f64>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_deriv: Vec<f64> = vec![0.0; dim];
+    if r < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_deriv);
+    }
+    let mut ka: f64 = 0.0;
+    let mut kb: f64 = 0.0;
+    let mut kc: f64 = 0.0;
+    let mut kd: f64 = 0.0;
+    let mut ke: f64 = 0.0;
+    let span_a: f64 = kv[j + r] - kv[j];
+    let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+    let span_c: f64 = kv[j + r - 1] - kv[j];
+    let span_d: f64 = kv[j + r] - kv[j + 1];
+    let span_e: f64 = kv[j + r + 1] - kv[j + 2];
+    if span_a != 0.0 {
+        ka = 1.0 / span_a;
+    }
+    if span_b != 0.0 {
+        kb = 1.0 / span_b;
+    }
+    if span_c != 0.0 {
+        kc = 1.0 / span_c;
+    }
+    if span_d != 0.0 {
+        kd = 1.0 / span_d;
+    }
+    if span_e != 0.0 {
+        ke = 1.0 / span_e;
+    }
+    let bspline_basis_d = kd * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 1, v);
+    let bspline_basis_d2v = ka * (kc * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j, v) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 2, v));
+    let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+    let bspline_basis_prod = bspline_basis_u * bspline_basis_d2v;
+    for k in 0..dim {
+        evaluated_deriv[k] = float_r * (float_r - 1.0) * bspline_basis_prod;
+    }
+    Ok(evaluated_deriv)
+}
+
+#[pyfunction]
 fn bspline_surf_eval_iso_u(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>,
     u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
     let n = p.len() - 1;  // Number of control points in the u-direction minus 1
@@ -4422,6 +4574,341 @@ fn bspline_surf_d2sdv2_iso_v(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>, 
                     evaluated_derivs[u_idx][k] += float_r * (float_r - 1.0) * p[i][j][k] * bspline_basis_prod;
                 }
             }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_eval_dp_iso_u(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_points: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+        let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+        let bspline_basis_prod = bspline_basis_u * bspline_basis_v;
+        for k in 0..dim {
+            evaluated_points[v_idx][k] = bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bspline_surf_eval_dp_iso_v(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize,
+    nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_points: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+        let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+        let bspline_basis_prod = bspline_basis_u * bspline_basis_v;
+        for k in 0..dim {
+            evaluated_points[u_idx][k] = bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdu_dp_iso_u(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let span_a: f64 = ku[i + q] - ku[i];
+        let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        let bspline_basis_du = ka * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i, u) - kb * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i + 1, u);
+        let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+        let bspline_basis_prod = bspline_basis_du * bspline_basis_v;
+        for k in 0..dim {
+            evaluated_derivs[v_idx][k] = float_q * bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdu_dp_iso_v(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let span_a: f64 = ku[i + q] - ku[i];
+        let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        let bspline_basis_du = ka * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i, u) - kb * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i + 1, u);
+        let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+        let bspline_basis_prod = bspline_basis_du * bspline_basis_v;
+        for k in 0..dim {
+            evaluated_derivs[u_idx][k] = float_q * bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdv_dp_iso_u(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let span_a: f64 = kv[j + r] - kv[j];
+        let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        let bspline_basis_dv = ka * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j, v) - kb * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j + 1, v);
+        let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+        let bspline_basis_prod = bspline_basis_u * bspline_basis_dv;
+        for k in 0..dim {
+            evaluated_derivs[v_idx][k] = float_r * bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdv_dp_iso_v(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let span_a: f64 = kv[j + r] - kv[j];
+        let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        let bspline_basis_dv = ka * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j, v) - kb * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j + 1, v);
+        let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+        let bspline_basis_prod = bspline_basis_u * bspline_basis_dv;
+        for k in 0..dim {
+            evaluated_derivs[u_idx][k] = float_r * bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdu2_dp_iso_u(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    if q < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let mut kc: f64 = 0.0;
+        let mut kd: f64 = 0.0;
+        let mut ke: f64 = 0.0;
+        let span_a: f64 = ku[i + q] - ku[i];
+        let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+        let span_c: f64 = ku[i + q - 1] - ku[i];
+        let span_d: f64 = ku[i + q] - ku[i + 1];
+        let span_e: f64 = ku[i + q + 1] - ku[i + 2];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        if span_c != 0.0 {
+            kc = 1.0 / span_c;
+        }
+        if span_d != 0.0 {
+            kd = 1.0 / span_d;
+        }
+        if span_e != 0.0 {
+            ke = 1.0 / span_e;
+        }
+        let bspline_basis_d = kd * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 1, u);
+        let bspline_basis_d2u = ka * (kc * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i, u) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 2, u));
+        let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+        let bspline_basis_prod = bspline_basis_d2u * bspline_basis_v;
+        for k in 0..dim {
+            evaluated_derivs[v_idx][k] = float_q * (float_q - 1.0) * bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdu2_dp_iso_v(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    if q < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let mut kc: f64 = 0.0;
+        let mut kd: f64 = 0.0;
+        let mut ke: f64 = 0.0;
+        let span_a: f64 = ku[i + q] - ku[i];
+        let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+        let span_c: f64 = ku[i + q - 1] - ku[i];
+        let span_d: f64 = ku[i + q] - ku[i + 1];
+        let span_e: f64 = ku[i + q + 1] - ku[i + 2];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        if span_c != 0.0 {
+            kc = 1.0 / span_c;
+        }
+        if span_d != 0.0 {
+            kd = 1.0 / span_d;
+        }
+        if span_e != 0.0 {
+            ke = 1.0 / span_e;
+        }
+        let bspline_basis_d = kd * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 1, u);
+        let bspline_basis_d2u = ka * (kc * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i, u) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 2, u));
+        let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+        let bspline_basis_prod = bspline_basis_d2u * bspline_basis_v;
+        for k in 0..dim {
+            evaluated_derivs[u_idx][k] = float_q * (float_q - 1.0) * bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdv2_dp_iso_u(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: f64, nv: usize) -> PyResult<Vec<Vec<f64>>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nv];
+    if r < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for v_idx in 0..nv {
+        let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let mut kc: f64 = 0.0;
+        let mut kd: f64 = 0.0;
+        let mut ke: f64 = 0.0;
+        let span_a: f64 = kv[j + r] - kv[j];
+        let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+        let span_c: f64 = kv[j + r - 1] - kv[j];
+        let span_d: f64 = kv[j + r] - kv[j + 1];
+        let span_e: f64 = kv[j + r + 1] - kv[j + 2];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        if span_c != 0.0 {
+            kc = 1.0 / span_c;
+        }
+        if span_d != 0.0 {
+            kd = 1.0 / span_d;
+        }
+        if span_e != 0.0 {
+            ke = 1.0 / span_e;
+        }
+        let bspline_basis_d = kd * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 1, v);
+        let bspline_basis_d2v = ka * (kc * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j, v) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 2, v));
+        let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+        let bspline_basis_prod = bspline_basis_u * bspline_basis_d2v;
+        for k in 0..dim {
+            evaluated_derivs[v_idx][k] = float_r * (float_r - 1.0) * bspline_basis_prod;
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdv2_dp_iso_v(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, v: f64) -> PyResult<Vec<Vec<f64>>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<f64>> = vec![vec![0.0; dim]; nu];
+    if r < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        let mut ka: f64 = 0.0;
+        let mut kb: f64 = 0.0;
+        let mut kc: f64 = 0.0;
+        let mut kd: f64 = 0.0;
+        let mut ke: f64 = 0.0;
+        let span_a: f64 = kv[j + r] - kv[j];
+        let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+        let span_c: f64 = kv[j + r - 1] - kv[j];
+        let span_d: f64 = kv[j + r] - kv[j + 1];
+        let span_e: f64 = kv[j + r + 1] - kv[j + 2];
+        if span_a != 0.0 {
+            ka = 1.0 / span_a;
+        }
+        if span_b != 0.0 {
+            kb = 1.0 / span_b;
+        }
+        if span_c != 0.0 {
+            kc = 1.0 / span_c;
+        }
+        if span_d != 0.0 {
+            kd = 1.0 / span_d;
+        }
+        if span_e != 0.0 {
+            ke = 1.0 / span_e;
+        }
+        let bspline_basis_d = kd * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 1, v);
+        let bspline_basis_d2v = ka * (kc * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j, v) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 2, v));
+        let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+        let bspline_basis_prod = bspline_basis_u * bspline_basis_d2v;
+        for k in 0..dim {
+            evaluated_derivs[u_idx][k] = float_r * (float_r - 1.0) * bspline_basis_prod;
         }
     }
     Ok(evaluated_derivs)
@@ -4897,6 +5384,370 @@ fn bspline_surf_d2sdv2_uvvecs(p: Vec<Vec<Vec<f64>>>, ku: Vec<f64>, kv: Vec<f64>,
                         evaluated_derivs[u_idx][v_idx][k] += float_r * (float_r - 1.0) * p[i][j][k] * bspline_basis_prod;
                     }
                 }
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_eval_dp_grid(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_points: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_points[u_idx][v_idx][k] = bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdu_dp_grid(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let span_a: f64 = ku[i + q] - ku[i];
+            let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            let bspline_basis_du = ka * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i, u) - kb * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i + 1, u);
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+            let bspline_basis_prod = bspline_basis_du * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_q * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdv_dp_grid(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let span_a: f64 = kv[j + r] - kv[j];
+            let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            let bspline_basis_dv = ka * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j, v) - kb * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j + 1, v);
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_dv;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_r * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdu2_dp_grid(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    if q < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let mut kc: f64 = 0.0;
+            let mut kd: f64 = 0.0;
+            let mut ke: f64 = 0.0;
+            let span_a: f64 = ku[i + q] - ku[i];
+            let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+            let span_c: f64 = ku[i + q - 1] - ku[i];
+            let span_d: f64 = ku[i + q] - ku[i + 1];
+            let span_e: f64 = ku[i + q + 1] - ku[i + 2];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            if span_c != 0.0 {
+                kc = 1.0 / span_c;
+            }
+            if span_d != 0.0 {
+                kd = 1.0 / span_d;
+            }
+            if span_e != 0.0 {
+                ke = 1.0 / span_e;
+            }
+            let bspline_basis_d = kd * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 1, u);
+            let bspline_basis_d2u = ka * (kc * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i, u) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 2, u));
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v);
+            let bspline_basis_prod = bspline_basis_d2u * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_q * (float_q - 1.0) * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdv2_dp_grid(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, nu: usize, nv: usize) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    if r < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for u_idx in 0..nu {
+        let u = (u_idx as f64) * 1.0 / (nu as f64 - 1.0);
+        for v_idx in 0..nv {
+            let v = (v_idx as f64) * 1.0 / (nv as f64 - 1.0);
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let mut kc: f64 = 0.0;
+            let mut kd: f64 = 0.0;
+            let mut ke: f64 = 0.0;
+            let span_a: f64 = kv[j + r] - kv[j];
+            let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+            let span_c: f64 = kv[j + r - 1] - kv[j];
+            let span_d: f64 = kv[j + r] - kv[j + 1];
+            let span_e: f64 = kv[j + r + 1] - kv[j + 2];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            if span_c != 0.0 {
+                kc = 1.0 / span_c;
+            }
+            if span_d != 0.0 {
+                kd = 1.0 / span_d;
+            }
+            if span_e != 0.0 {
+                ke = 1.0 / span_e;
+            }
+            let bspline_basis_d = kd * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 1, v);
+            let bspline_basis_d2v = ka * (kc * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j, v) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 2, v));
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_d2v;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_r * (float_r - 1.0) * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_eval_dp_uvvecs(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let nu = u.len();
+    let nv = v.len();
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_points: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u[u_idx]);
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v[v_idx]);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_points[u_idx][v_idx][k] = bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_points)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdu_dp_uvvecs(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let nu = u.len();
+    let nv = v.len();
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let span_a: f64 = ku[i + q] - ku[i];
+            let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            let bspline_basis_du = ka * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i, u[u_idx]) - kb * cox_de_boor(&ku, &possible_span_indices_u, q - 1, i + 1, u[u_idx]);
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v[v_idx]);
+            let bspline_basis_prod = bspline_basis_du * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_q * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_dsdv_dp_uvvecs(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let nu = u.len();
+    let nv = v.len();
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let span_a: f64 = kv[j + r] - kv[j];
+            let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            let bspline_basis_dv = ka * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j, v[v_idx]) - kb * cox_de_boor(&kv, &possible_span_indices_v, r - 1, j + 1, v[v_idx]);
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u[u_idx]);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_dv;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_r * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdu2_dp_uvvecs(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let nu = u.len();
+    let nv = v.len();
+    let float_q = q as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    if q < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let mut kc: f64 = 0.0;
+            let mut kd: f64 = 0.0;
+            let mut ke: f64 = 0.0;
+            let span_a: f64 = ku[i + q] - ku[i];
+            let span_b: f64 = ku[i + q + 1] - ku[i + 1];
+            let span_c: f64 = ku[i + q - 1] - ku[i];
+            let span_d: f64 = ku[i + q] - ku[i + 1];
+            let span_e: f64 = ku[i + q + 1] - ku[i + 2];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            if span_c != 0.0 {
+                kc = 1.0 / span_c;
+            }
+            if span_d != 0.0 {
+                kd = 1.0 / span_d;
+            }
+            if span_e != 0.0 {
+                ke = 1.0 / span_e;
+            }
+            let bspline_basis_d = kd * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 1, u[u_idx]);
+            let bspline_basis_d2u = ka * (kc * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i, u[u_idx]) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&ku, &possible_span_indices_u, q - 2, i + 2, u[u_idx]));
+            let bspline_basis_v = cox_de_boor(&kv, &possible_span_indices_v, r, j, v[v_idx]);
+            let bspline_basis_prod = bspline_basis_d2u * bspline_basis_v;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_q * (float_q - 1.0) * bspline_basis_prod;
+            }
+        }
+    }
+    Ok(evaluated_derivs)
+}
+
+#[pyfunction]
+fn bspline_surf_d2sdv2_dp_uvvecs(ku: Vec<f64>, kv: Vec<f64>, i: usize, j: usize, q: usize, r: usize, dim: usize, u: Vec<f64>, v: Vec<f64>) -> PyResult<Vec<Vec<Vec<f64>>>> {
+    let nu = u.len();
+    let nv = v.len();
+    let float_r = r as f64;
+    let possible_span_indices_u = get_possible_span_indices(&ku);
+    let possible_span_indices_v = get_possible_span_indices(&kv);
+    let mut evaluated_derivs: Vec<Vec<Vec<f64>>> = vec![vec![vec![0.0; dim]; nv]; nu];
+    if r < 2 { // Degree less than 2 implies the second derivative is zero
+        return Ok(evaluated_derivs);
+    }
+    for u_idx in 0..nu {
+        for v_idx in 0..nv {
+            let mut ka: f64 = 0.0;
+            let mut kb: f64 = 0.0;
+            let mut kc: f64 = 0.0;
+            let mut kd: f64 = 0.0;
+            let mut ke: f64 = 0.0;
+            let span_a: f64 = kv[j + r] - kv[j];
+            let span_b: f64 = kv[j + r + 1] - kv[j + 1];
+            let span_c: f64 = kv[j + r - 1] - kv[j];
+            let span_d: f64 = kv[j + r] - kv[j + 1];
+            let span_e: f64 = kv[j + r + 1] - kv[j + 2];
+            if span_a != 0.0 {
+                ka = 1.0 / span_a;
+            }
+            if span_b != 0.0 {
+                kb = 1.0 / span_b;
+            }
+            if span_c != 0.0 {
+                kc = 1.0 / span_c;
+            }
+            if span_d != 0.0 {
+                kd = 1.0 / span_d;
+            }
+            if span_e != 0.0 {
+                ke = 1.0 / span_e;
+            }
+            let bspline_basis_d = kd * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 1, v[v_idx]);
+            let bspline_basis_d2v = ka * (kc * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j, v[v_idx]) - bspline_basis_d) - kb * (bspline_basis_d - ke * cox_de_boor(&kv, &possible_span_indices_v, r - 2, j + 2, v[v_idx]));
+            let bspline_basis_u = cox_de_boor(&ku, &possible_span_indices_u, q, i, u[u_idx]);
+            let bspline_basis_prod = bspline_basis_u * bspline_basis_d2v;
+            for k in 0..dim {
+                evaluated_derivs[u_idx][v_idx][k] = float_r * (float_r - 1.0) * bspline_basis_prod;
             }
         }
     }
@@ -7277,6 +8128,11 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bspline_surf_dsdv, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_eval_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdu_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdv_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_dp, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_dp, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_eval_iso_u, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_eval_iso_v, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_dsdu_iso_u, m)?)?;
@@ -7287,16 +8143,36 @@ fn rust_nurbs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_iso_v, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_iso_u, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_eval_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_eval_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdu_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdu_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdv_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdv_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_dp_iso_v, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_dp_iso_u, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_dp_iso_v, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_eval_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_dsdu_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_dsdv_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_eval_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdu_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdv_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_dp_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_dp_grid, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_eval_uvvecs, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_dsdu_uvvecs, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_dsdv_uvvecs, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_uvvecs, m)?)?;
     m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_eval_dp_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdu_dp_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_dsdv_dp_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdu2_dp_uvvecs, m)?)?;
+    m.add_function(wrap_pyfunction!(bspline_surf_d2sdv2_dp_uvvecs, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_curve_eval, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_curve_eval_dp, m)?)?;
     m.add_function(wrap_pyfunction!(nurbs_curve_dcdt, m)?)?;

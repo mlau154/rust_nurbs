@@ -3496,6 +3496,131 @@ def test_bspline_surf_d2sdv2():
     assert second_deriv.shape == (3,)
 
 
+def test_bspline_surf_eval_dp():
+    """
+    Evaluates the surface sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_eval(p, ku, kv, u, v))
+    surf_dp_exact = np.array(bspline_surf_eval_dp(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_eval(p, ku, kv, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdu_dp():
+    """
+    Evaluates the first derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdu(p, ku, kv, u, v))
+    surf_dp_exact = np.array(bspline_surf_dsdu_dp(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdu(p, ku, kv, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdv_dp():
+    """
+    Evaluates the first derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdv(p, ku, kv, u, v))
+    surf_dp_exact = np.array(bspline_surf_dsdv_dp(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdv(p, ku, kv, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdu2_dp():
+    """
+    Evaluates the second derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdu2(p, ku, kv, u, v))
+    surf_dp_exact = np.array(bspline_surf_d2sdu2_dp(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdu2(p, ku, kv, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdv2_dp():
+    """
+    Evaluates the second derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, v = 0.3, 0.7
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdv2(p, ku, kv, u, v))
+    surf_dp_exact = np.array(bspline_surf_d2sdv2_dp(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdv2(p, ku, kv, u, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
 def test_bspline_surf_eval_iso_u():
     """
     Evaluates a 2x2 B-spline surface along a :math:`u`-isoparametric curve
@@ -3674,6 +3799,266 @@ def test_bspline_surf_d2sdv2_iso_v():
     assert second_derivs.shape == (25, 3)
 
 
+def test_bspline_surf_eval_dp_iso_u():
+    """
+    Evaluates the surface sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_eval_iso_u(p, ku, kv, u, nv))
+    surf_dp_exact = np.array(bspline_surf_eval_dp_iso_u(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_eval_iso_u(p, ku, kv, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_eval_dp_iso_v():
+    """
+    Evaluates the surface sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, v = 10, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_eval_iso_v(p, ku, kv, nu, v))
+    surf_dp_exact = np.array(bspline_surf_eval_dp_iso_v(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_eval_iso_v(p, ku, kv, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdu_dp_iso_u():
+    """
+    Evaluates the first derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdu_iso_u(p, ku, kv, u, nv))
+    surf_dp_exact = np.array(bspline_surf_dsdu_dp_iso_u(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdu_iso_u(p, ku, kv, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdu_dp_iso_v():
+    """
+    Evaluates the first derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, v = 10, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdu_iso_v(p, ku, kv, nu, v))
+    surf_dp_exact = np.array(bspline_surf_dsdu_dp_iso_v(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdu_iso_v(p, ku, kv, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdv_dp_iso_u():
+    """
+    Evaluates the first derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdv_iso_u(p, ku, kv, u, nv))
+    surf_dp_exact = np.array(bspline_surf_dsdv_dp_iso_u(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdv_iso_u(p, ku, kv, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdv_dp_iso_v():
+    """
+    Evaluates the first derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, v = 10, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdv_iso_v(p, ku, kv, nu, v))
+    surf_dp_exact = np.array(bspline_surf_dsdv_dp_iso_v(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdv_iso_v(p, ku, kv, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdu2_dp_iso_u():
+    """
+    Evaluates the second derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdu2_iso_u(p, ku, kv, u, nv))
+    surf_dp_exact = np.array(bspline_surf_d2sdu2_dp_iso_u(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdu2_iso_u(p, ku, kv, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdu2_dp_iso_v():
+    """
+    Evaluates the second derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, v = 10, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdu2_iso_v(p, ku, kv, nu, v))
+    surf_dp_exact = np.array(bspline_surf_d2sdu2_dp_iso_v(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdu2_iso_v(p, ku, kv, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdv2_dp_iso_u():
+    """
+    Evaluates the second derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    u, nv = 0.3, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdv2_iso_u(p, ku, kv, u, nv))
+    surf_dp_exact = np.array(bspline_surf_d2sdv2_dp_iso_u(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], u, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdv2_iso_u(p, ku, kv, u, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdv2_dp_iso_v():
+    """
+    Evaluates the second derivative sensitivity along an isoparametric curve 
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, v = 10, 0.6
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdv2_iso_v(p, ku, kv, nu, v))
+    surf_dp_exact = np.array(bspline_surf_d2sdv2_dp_iso_v(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, v))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdv2_iso_v(p, ku, kv, nu, v))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
 def test_bspline_surf_eval_grid():
     """
     Evaluates a 1x2 B-spline surface on a grid of (u,v) pairs
@@ -3755,6 +4140,136 @@ def test_bspline_surf_d2sdv2_grid():
     kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
     second_derivs = np.array(bspline_surf_d2sdv2_grid(p, ku, kv, 25, 15))
     assert second_derivs.shape == (25, 15, 3)
+
+
+def test_bspline_surf_eval_dp_grid():
+    """
+    Evaluates the surface sensitivity along on a :math:`(u,v)` grid
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_eval_grid(p, ku, kv, nu, nv))
+    surf_dp_exact = np.array(bspline_surf_eval_dp_grid(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_eval_grid(p, ku, kv, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdu_dp_grid():
+    """
+    Evaluates the first derivative sensitivity on a :math:`(u,v)` grid
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdu_grid(p, ku, kv, nu, nv))
+    surf_dp_exact = np.array(bspline_surf_dsdu_dp_grid(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdu_grid(p, ku, kv, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_dsdv_dp_grid():
+    """
+    Evaluates the first derivative sensitivity on a :math:`(u,v)` grid
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_dsdv_grid(p, ku, kv, nu, nv))
+    surf_dp_exact = np.array(bspline_surf_dsdv_dp_grid(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_dsdv_grid(p, ku, kv, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdu2_dp_grid():
+    """
+    Evaluates the second derivative sensitivity on a :math:`(u,v)` grid
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdu2_grid(p, ku, kv, nu, nv))
+    surf_dp_exact = np.array(bspline_surf_d2sdu2_dp_grid(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdu2_grid(p, ku, kv, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
+
+
+def test_bspline_surf_d2sdv2_dp_grid():
+    """
+    Evaluates the second derivative sensitivity on a :math:`(u,v)` grid
+    with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [[0.0, 0.0, 0.0], [0.3, 0.2, 0.0], [0.6, -0.1, 0.0], [1.2, 0.1, 0.0]],
+        [[0.0, 0.0, 1.0], [0.3, 0.4, 1.0], [0.6, -0.2, 1.0], [1.2, 0.2, 1.0]],
+        [[0.0, 0.1, 2.0], [0.5, 0.3, 2.0], [0.5, -0.3, 2.0], [1.2, 0.3, 2.0]]
+    ])
+    ku = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    kv = np.array([0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0])
+    nu, nv = 20, 10
+    i, j = 1, 2
+    surf_eval_1 = np.array(bspline_surf_d2sdv2_grid(p, ku, kv, nu, nv))
+    surf_dp_exact = np.array(bspline_surf_d2sdv2_dp_grid(ku, kv, i, j, ku.shape[0] - p.shape[0] - 1, kv.shape[0] - p.shape[1] - 1, p.shape[2], nu, nv))
+
+    # Update the value of the control point matrix at i=i, j=j
+    step = 1e-8
+    p[i, j, :] += step
+    surf_eval_2 = np.array(bspline_surf_d2sdv2_grid(p, ku, kv, nu, nv))
+    surf_dp_approx = (surf_eval_2 - surf_eval_1) / step
+    assert np.all(np.isclose(surf_dp_exact, surf_dp_approx))
 
 
 def test_bspline_surf_eval_uvvecs():

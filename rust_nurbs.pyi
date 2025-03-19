@@ -4398,6 +4398,165 @@ def bspline_surf_d2sdv2(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[flo
         Value of the second derivative w.r.t. :math:`v` of the B-spline surface at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
     """
 
+def bspline_surf_eval_dp(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface with respect to control point :math:`\mathbf{P}_{i,j}` at a :math:`(u,v)` parameter pair
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the B-spline surface sensitivity at :math:`(u,v)`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bspline_surf_dsdu_dp(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative with respect to control point :math:`\mathbf{P}_{i,j}` at a :math:`(u,v)` parameter pair
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the sensitivity of the first derivative w.r.t. :math:`u` of the B-spline surface at :math:`(u,v)` with 
+        respect to control point :math:`\mathbf{P}_{i,j}`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bspline_surf_dsdv_dp(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative with respect to control point :math:`\mathbf{P}_{i,j}` at a :math:`(u,v)` parameter pair
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the sensitivity of the first derivative w.r.t. :math:`v` of the B-spline surface at :math:`(u,v)` with 
+        respect to control point :math:`\mathbf{P}_{i,j}`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bspline_surf_d2sdu2_dp(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative with respect to control point :math:`\mathbf{P}_{i,j}` at a :math:`(u,v)` parameter pair
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the sensitivity of the second derivative w.r.t. :math:`u` of the B-spline surface at :math:`(u,v)` with 
+        respect to control point :math:`\mathbf{P}_{i,j}`. Has the same size as the innermost dimension of ``p``
+    """
+
+def bspline_surf_d2sdv2_dp(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, v: float) -> List[float]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative with respect to control point :math:`\mathbf{P}_{i,j}` at a :math:`(u,v)` parameter pair
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+
+    Returns
+    -------
+    List[float]
+        Value of the sensitivity of the second derivative w.r.t. :math:`v` of the B-spline surface at :math:`(u,v)` with 
+        respect to control point :math:`\mathbf{P}_{i,j}`. Has the same size as the innermost dimension of ``p``
+    """
+
 def bspline_surf_eval_iso_u(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], u: float, nv: int) -> List[List[float]]:
     r"""
     Evaluates an isoparametric curve in :math:`u` of a B-spline surface with :math:`n+1` control points in the :math:`u`-direction
@@ -4736,6 +4895,334 @@ def bspline_surf_d2sdv2_iso_v(p: Iterable[Iterable[Iterable[float]]], ku: Iterab
         (usually ``3``)
     """
 
+def bspline_surf_eval_dp_iso_u(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, nv: int):
+    r"""
+    Evaluates the sensitivity of a B-spline surface with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_eval_dp_iso_v(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, v: float):
+    r"""
+    Evaluates the sensitivity of a B-spline surface with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdu_dp_iso_u(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, nv: int):
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdu_dp_iso_v(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, v: float):
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdv_dp_iso_u(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, nv: int):
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdv_dp_iso_v(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, v: float):
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdu2_dp_iso_u(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, nv: int):
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdu2_dp_iso_v(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, v: float):
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdv2_dp_iso_u(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: float, nv: int):
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: float
+        Parameter value in the :math:`u`-direction at which to evaluate the surface
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdv2_dp_iso_v(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, v: float):
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    v: float
+        Parameter value in the :math:`v`-direction at which to evaluate the surface
+    
+    Returns
+    -------
+    List[List[float]]
+        2-D array of size :math:`N_u \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
 def bspline_surf_eval_grid(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], nu: int, nv: int) -> List[List[List[float]]]:
     r"""
     Evaluates a B-spline surface with :math:`n+1` control points in the :math:`u`-direction
@@ -5071,6 +5558,334 @@ def bspline_surf_d2sdv2_uvvecs(p: Iterable[Iterable[Iterable[float]]], ku: Itera
         Values of :math:`N_u \times N_v` second derivatives with respsect to :math:`v` on the B-spline surface at each of the :math:`(u,v)` pairs.
         Output array has size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the spatial dimension
         (usually ``3``)
+    """
+
+def bspline_surf_eval_dp_grid(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdu_dp_grid(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdv_dp_grid(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdu2_dp_grid(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdv2_dp_grid(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, nu: int, nv: int) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    nu: int
+        Number of linearly spaced points in the :math:`u`-direction
+    nv: int
+        Number of linearly spaced points in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`N_u \times N_v \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_eval_dp_uvvecs(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface first derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: Iterable[float]:
+        Parameter vector in the :math:`u`-direction
+    v: Iterable[float]:
+        Parameter vector in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdu_dp_uvvecs(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: Iterable[float]:
+        Parameter vector in the :math:`u`-direction
+    v: Iterable[float]:
+        Parameter vector in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_dsdv_dp_uvvecs(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`u` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: Iterable[float]:
+        Parameter vector in the :math:`u`-direction
+    v: Iterable[float]:
+        Parameter vector in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdu2_dp_uvvecs(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_v` linearly-spaced points along the :math:`v`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: Iterable[float]:
+        Parameter vector in the :math:`u`-direction
+    v: Iterable[float]:
+        Parameter vector in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the number of spatial dimensions
+    """
+
+def bspline_surf_d2sdv2_dp_iuvvecs(ku: Iterable[float], kv: Iterable[float], i: int, j: int, q: int, r: int, dim: int, u: Iterable[float], v: Iterable[float]) -> List[List[List[float]]]:
+    r"""
+    Evaluates the sensitivity of a B-spline surface second derivative w.r.t. :math:`v` 
+    with respect to control point :math:`\mathbf{P}_{i,j}` 
+    at :math:`N_u` linearly-spaced points along the :math:`u`-direction
+
+    Parameters
+    ----------
+    ku: Iterable[float]
+        1-D list or array of knots in the :math:`u`-parametric direction
+    kv: Iterable[float]
+        1-D list or array of knots in the :math:`v`-parametric direction
+    i: int
+        Index :math:`i` (:math:`u`-direction) of the control point
+    j: int
+        Index :math:`j` (:math:`v`-direction) of the control point
+    q: int
+        Degree of the surface in the :math:`u`-direction
+    r: int
+        Degree of the surface in the :math:`v`-direction
+    dim: int
+        Number of spatial dimensions in the surface. Usually ``3``
+    u: Iterable[float]:
+        Parameter vector in the :math:`u`-direction
+    v: Iterable[float]:
+        Parameter vector in the :math:`v`-direction
+    
+    Returns
+    -------
+    List[List[List[float]]]
+        3-D array of size :math:`\text{len}(u) \times \text{len}(v) \times d`, where :math:`d` is the number of spatial dimensions
     """
 
 def nurbs_curve_eval(p: Iterable[Iterable[float]], w: Iterable[float], k: Iterable[float], t: float) -> List[float]:
