@@ -2867,6 +2867,33 @@ def test_bspline_curve_eval():
     assert len(k) - len(p) - 1 == 3  # Curve degree
 
 
+def test_bspline_curve_eval_dp():
+    """
+    Evaluates the curve sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    t = 0.4
+    i = 1
+    curve_eval_1 = np.array(bspline_curve_eval(p, k, t))
+    curve_dp_exact = np.array(bspline_curve_eval_dp(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bspline_curve_eval(p, k, t))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_bspline_curve_dcdt():
     """
     Evaluates the first derivative w.r.t. :math:`t` of sample uniform 2-D 
@@ -2906,6 +2933,33 @@ def test_bspline_curve_dcdt():
     assert len(k) - len(p) - 1 == 3  # Curve degree
 
 
+def test_bspline_curve_dcdt_dp():
+    """
+    Evaluates the curve first derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    t = 0.4
+    i = 1
+    curve_dcdt_1 = np.array(bspline_curve_dcdt(p, k, t))
+    curve_dp_exact = np.array(bspline_curve_dcdt_dp(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_dcdt_2 = np.array(bspline_curve_dcdt(p, k, t))
+    curve_dp_approx = (curve_dcdt_2 - curve_dcdt_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_bspline_curve_dc2dt2():
     """
     Evaluates the second derivative w.r.t. :math:`t` of sample uniform 2-D 
@@ -2943,6 +2997,396 @@ def test_bspline_curve_dc2dt2():
     curve_point = np.array(bspline_curve_d2cdt2(p, k, 0.2))
     assert curve_point.shape == (3,)
     assert len(k) - len(p) - 1 == 3  # Curve degree
+
+
+def test_bspline_curve_d2cdt2_dp():
+    """
+    Evaluates the curve second derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    t = 0.4
+    i = 1
+    curve_d2cdt2_1 = np.array(bspline_curve_d2cdt2(p, k, t))
+    curve_dp_exact = np.array(bspline_curve_d2cdt2_dp(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_d2cdt2_2 = np.array(bspline_curve_d2cdt2(p, k, t))
+    curve_dp_approx = (curve_d2cdt2_2 - curve_d2cdt2_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
+def test_bspline_curve_eval_grid():
+    """
+    Evaluates sample 2-D and 3-D B-spline curves along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.5],
+        [0.4, 0.2],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
+    curve_point = np.array(bspline_curve_eval_grid(p, k, 50))
+    assert curve_point.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.4, 0.2, 0.2],
+        [0.5, 0.2, 0.6],
+        [0.7, 0.1, 0.5],
+        [0.8, 0.2, 0.4],
+        [1.0, 0.1, 0.3]
+    ])
+    curve_point = np.array(bspline_curve_eval_grid(p, k, 50))
+    assert curve_point.shape == (50, 3)
+
+
+def test_bspline_curve_eval_dp_grid():
+    """
+    Evaluates the curve sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    nt = 100
+    i = 1
+    curve_eval_1 = np.array(bspline_curve_eval_grid(p, k, nt))
+    curve_dp_exact = np.array(bspline_curve_eval_dp_grid(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bspline_curve_eval_grid(p, k, nt))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
+def test_bspline_curve_dcdt_grid():
+    """
+    Evaluates sample 2-D and 3-D B-spline curve first derivatives along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.5],
+        [0.4, 0.2],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
+    first_deriv = np.array(bspline_curve_dcdt_grid(p, k, 50))
+    assert first_deriv.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.4, 0.2, 0.2],
+        [0.5, 0.2, 0.6],
+        [0.7, 0.1, 0.5],
+        [0.8, 0.2, 0.4],
+        [1.0, 0.1, 0.3]
+    ])
+    first_deriv = np.array(bspline_curve_dcdt_grid(p, k, 50))
+    assert first_deriv.shape == (50, 3)
+
+
+def test_bspline_curve_dcdt_dp_grid():
+    """
+    Evaluates the curve first derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    nt = 100
+    i = 1
+    curve_dcdt_1 = np.array(bspline_curve_dcdt_grid(p, k, nt))
+    curve_dp_exact = np.array(bspline_curve_dcdt_dp_grid(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_dcdt_2 = np.array(bspline_curve_dcdt_grid(p, k, nt))
+    curve_dp_approx = (curve_dcdt_2 - curve_dcdt_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
+def test_bspline_curve_d2cdt2_grid():
+    """
+    Evaluates sample 2-D and 3-D B-spline curve second derivatives along a grid with 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.5],
+        [0.4, 0.2],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
+    second_deriv = np.array(bspline_curve_d2cdt2_grid(p, k, 50))
+    assert second_deriv.shape == (50, 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.4, 0.2, 0.2],
+        [0.5, 0.2, 0.6],
+        [0.7, 0.1, 0.5],
+        [0.8, 0.2, 0.4],
+        [1.0, 0.1, 0.3]
+    ])
+    second_deriv = np.array(bspline_curve_d2cdt2_grid(p, k, 50))
+    assert second_deriv.shape == (50, 3)
+
+
+def test_bspline_curve_d2cdt2_dp_grid():
+    """
+    Evaluates the curve second derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    nt = 100
+    i = 1
+    curve_d2cdt2_1 = np.array(bspline_curve_d2cdt2_grid(p, k, nt))
+    curve_dp_exact = np.array(bspline_curve_d2cdt2_dp_grid(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_d2cdt2_2 = np.array(bspline_curve_d2cdt2_grid(p, k, nt))
+    curve_dp_approx = (curve_d2cdt2_2 - curve_d2cdt2_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
+def test_bspline_curve_eval_tvec():
+    """
+    Evaluates sample 2-D and 3-D B-spline curves along a vector of :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.5],
+        [0.4, 0.2],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    curve_point = np.array(bspline_curve_eval_tvec(p, k, t_vec))
+    assert curve_point.shape == (t_vec.shape[0], 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.4, 0.2, 0.2],
+        [0.5, 0.2, 0.6],
+        [0.7, 0.1, 0.5],
+        [0.8, 0.2, 0.4],
+        [1.0, 0.1, 0.3]
+    ])
+    curve_point = np.array(bspline_curve_eval_tvec(p, k, t_vec))
+    assert curve_point.shape == (t_vec.shape[0], 3)
+
+
+def test_bspline_curve_eval_dp_tvec():
+    """
+    Evaluates the curve sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 1
+    curve_eval_1 = np.array(bspline_curve_eval_tvec(p, k, t_vec))
+    curve_dp_exact = np.array(bspline_curve_eval_dp_tvec(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(bspline_curve_eval_tvec(p, k, t_vec))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
+def test_bspline_curve_dcdt_tvec():
+    """
+    Evaluates sample 2-D and 3-D B-spline curve first derivatives along a vector of 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.5],
+        [0.4, 0.2],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    first_deriv = np.array(bspline_curve_dcdt_tvec(p, k, t_vec))
+    assert first_deriv.shape == (t_vec.shape[0], 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.4, 0.2, 0.2],
+        [0.5, 0.2, 0.6],
+        [0.7, 0.1, 0.5],
+        [0.8, 0.2, 0.4],
+        [1.0, 0.1, 0.3]
+    ])
+    first_deriv = np.array(bspline_curve_dcdt_tvec(p, k, t_vec))
+    assert first_deriv.shape == (t_vec.shape[0], 3)
+
+
+def test_bspline_curve_dcdt_dp_tvec():
+    """
+    Evaluates the curve first derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 1
+    curve_dcdt_1 = np.array(bspline_curve_dcdt_tvec(p, k, t_vec))
+    curve_dp_exact = np.array(bspline_curve_dcdt_dp_tvec(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_dcdt_2 = np.array(bspline_curve_dcdt_tvec(p, k, t_vec))
+    curve_dp_approx = (curve_dcdt_2 - curve_dcdt_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
+def test_bspline_curve_d2cdt2_tvec():
+    """
+    Evaluates sample 2-D and 3-D B-spline curve second derivatives along a vector of 50 :math:`t`-values and ensures
+    that the shape of the output array is correct
+    """
+    # 2-D case
+    p = np.array([
+        [0.0, 0.0],
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.5],
+        [0.4, 0.2],
+        [0.7, 0.1],
+        [1.0, 0.1]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    second_deriv = np.array(bspline_curve_d2cdt2_tvec(p, k, t_vec))
+    assert second_deriv.shape == (t_vec.shape[0], 2)
+
+    # 3-D case
+    p = np.array([
+        [0.0, 0.0, 0.1],
+        [0.3, 0.5, 0.2],
+        [0.4, 0.2, 0.2],
+        [0.5, 0.2, 0.6],
+        [0.7, 0.1, 0.5],
+        [0.8, 0.2, 0.4],
+        [1.0, 0.1, 0.3]
+    ])
+    second_deriv = np.array(bspline_curve_d2cdt2_tvec(p, k, t_vec))
+    assert second_deriv.shape == (t_vec.shape[0], 3)
+
+
+def test_bspline_curve_d2cdt2_dp_tvec():
+    """
+    Evaluates the curve second derivative sensitivity with respect to a given control point 
+    location and ensures that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2]
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 1/3, 2/3, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 1
+    curve_d2cdt2_1 = np.array(bspline_curve_d2cdt2_tvec(p, k, t_vec))
+    curve_dp_exact = np.array(bspline_curve_d2cdt2_dp_tvec(k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_d2cdt2_2 = np.array(bspline_curve_d2cdt2_tvec(p, k, t_vec))
+    curve_dp_approx = (curve_d2cdt2_2 - curve_d2cdt2_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_bspline_surf_eval():
@@ -3791,207 +4235,6 @@ def test_nurbs_curve_d2cdt2_tvec():
         [1.0, 0.1, 0.3]
     ])
     second_deriv = np.array(nurbs_curve_d2cdt2_tvec(p, w, k, t_vec))
-    assert second_deriv.shape == (t_vec.shape[0], 3)
-
-
-def test_bspline_curve_eval_grid():
-    """
-    Evaluates sample 2-D and 3-D B-spline curves along a grid with 50 :math:`t`-values and ensures
-    that the shape of the output array is correct
-    """
-    # 2-D case
-    p = np.array([
-        [0.0, 0.0],
-        [0.1, 0.1],
-        [0.2, 0.4],
-        [0.3, 0.5],
-        [0.4, 0.2],
-        [0.7, 0.1],
-        [1.0, 0.1]
-    ])
-    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
-    curve_point = np.array(bspline_curve_eval_grid(p, k, 50))
-    assert curve_point.shape == (50, 2)
-
-    # 3-D case
-    p = np.array([
-        [0.0, 0.0, 0.1],
-        [0.3, 0.5, 0.2],
-        [0.4, 0.2, 0.2],
-        [0.5, 0.2, 0.6],
-        [0.7, 0.1, 0.5],
-        [0.8, 0.2, 0.4],
-        [1.0, 0.1, 0.3]
-    ])
-    curve_point = np.array(bspline_curve_eval_grid(p, k, 50))
-    assert curve_point.shape == (50, 3)
-
-
-def test_bspline_curve_dcdt_grid():
-    """
-    Evaluates sample 2-D and 3-D B-spline curve first derivatives along a grid with 50 :math:`t`-values and ensures
-    that the shape of the output array is correct
-    """
-    # 2-D case
-    p = np.array([
-        [0.0, 0.0],
-        [0.1, 0.1],
-        [0.2, 0.4],
-        [0.3, 0.5],
-        [0.4, 0.2],
-        [0.7, 0.1],
-        [1.0, 0.1]
-    ])
-    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
-    first_deriv = np.array(bspline_curve_dcdt_grid(p, k, 50))
-    assert first_deriv.shape == (50, 2)
-
-    # 3-D case
-    p = np.array([
-        [0.0, 0.0, 0.1],
-        [0.3, 0.5, 0.2],
-        [0.4, 0.2, 0.2],
-        [0.5, 0.2, 0.6],
-        [0.7, 0.1, 0.5],
-        [0.8, 0.2, 0.4],
-        [1.0, 0.1, 0.3]
-    ])
-    first_deriv = np.array(bspline_curve_dcdt_grid(p, k, 50))
-    assert first_deriv.shape == (50, 3)
-
-
-def test_bspline_curve_d2cdt2_grid():
-    """
-    Evaluates sample 2-D and 3-D B-spline curve second derivatives along a grid with 50 :math:`t`-values and ensures
-    that the shape of the output array is correct
-    """
-    # 2-D case
-    p = np.array([
-        [0.0, 0.0],
-        [0.1, 0.1],
-        [0.2, 0.4],
-        [0.3, 0.5],
-        [0.4, 0.2],
-        [0.7, 0.1],
-        [1.0, 0.1]
-    ])
-    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
-    second_deriv = np.array(bspline_curve_d2cdt2_grid(p, k, 50))
-    assert second_deriv.shape == (50, 2)
-
-    # 3-D case
-    p = np.array([
-        [0.0, 0.0, 0.1],
-        [0.3, 0.5, 0.2],
-        [0.4, 0.2, 0.2],
-        [0.5, 0.2, 0.6],
-        [0.7, 0.1, 0.5],
-        [0.8, 0.2, 0.4],
-        [1.0, 0.1, 0.3]
-    ])
-    second_deriv = np.array(bspline_curve_d2cdt2_grid(p, k, 50))
-    assert second_deriv.shape == (50, 3)
-
-
-def test_bspline_curve_eval_tvec():
-    """
-    Evaluates sample 2-D and 3-D B-spline curves along a vector of :math:`t`-values and ensures
-    that the shape of the output array is correct
-    """
-    # 2-D case
-    p = np.array([
-        [0.0, 0.0],
-        [0.1, 0.1],
-        [0.2, 0.4],
-        [0.3, 0.5],
-        [0.4, 0.2],
-        [0.7, 0.1],
-        [1.0, 0.1]
-    ])
-    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
-    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
-    curve_point = np.array(bspline_curve_eval_tvec(p, k, t_vec))
-    assert curve_point.shape == (t_vec.shape[0], 2)
-
-    # 3-D case
-    p = np.array([
-        [0.0, 0.0, 0.1],
-        [0.3, 0.5, 0.2],
-        [0.4, 0.2, 0.2],
-        [0.5, 0.2, 0.6],
-        [0.7, 0.1, 0.5],
-        [0.8, 0.2, 0.4],
-        [1.0, 0.1, 0.3]
-    ])
-    curve_point = np.array(bspline_curve_eval_tvec(p, k, t_vec))
-    assert curve_point.shape == (t_vec.shape[0], 3)
-
-
-def test_bspline_curve_dcdt_tvec():
-    """
-    Evaluates sample 2-D and 3-D B-spline curve first derivatives along a vector of 50 :math:`t`-values and ensures
-    that the shape of the output array is correct
-    """
-    # 2-D case
-    p = np.array([
-        [0.0, 0.0],
-        [0.1, 0.1],
-        [0.2, 0.4],
-        [0.3, 0.5],
-        [0.4, 0.2],
-        [0.7, 0.1],
-        [1.0, 0.1]
-    ])
-    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
-    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
-    first_deriv = np.array(bspline_curve_dcdt_tvec(p, k, t_vec))
-    assert first_deriv.shape == (t_vec.shape[0], 2)
-
-    # 3-D case
-    p = np.array([
-        [0.0, 0.0, 0.1],
-        [0.3, 0.5, 0.2],
-        [0.4, 0.2, 0.2],
-        [0.5, 0.2, 0.6],
-        [0.7, 0.1, 0.5],
-        [0.8, 0.2, 0.4],
-        [1.0, 0.1, 0.3]
-    ])
-    first_deriv = np.array(bspline_curve_dcdt_tvec(p, k, t_vec))
-    assert first_deriv.shape == (t_vec.shape[0], 3)
-
-
-def test_bspline_curve_d2cdt2_tvec():
-    """
-    Evaluates sample 2-D and 3-D B-spline curve second derivatives along a vector of 50 :math:`t`-values and ensures
-    that the shape of the output array is correct
-    """
-    # 2-D case
-    p = np.array([
-        [0.0, 0.0],
-        [0.1, 0.1],
-        [0.2, 0.4],
-        [0.3, 0.5],
-        [0.4, 0.2],
-        [0.7, 0.1],
-        [1.0, 0.1]
-    ])
-    k = np.array([0.0, 0.0, 0.0, 0.0, 0.25, 0.50, 0.75, 1.0, 1.0, 1.0, 1.0])
-    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
-    second_deriv = np.array(bspline_curve_d2cdt2_tvec(p, k, t_vec))
-    assert second_deriv.shape == (t_vec.shape[0], 2)
-
-    # 3-D case
-    p = np.array([
-        [0.0, 0.0, 0.1],
-        [0.3, 0.5, 0.2],
-        [0.4, 0.2, 0.2],
-        [0.5, 0.2, 0.6],
-        [0.7, 0.1, 0.5],
-        [0.8, 0.2, 0.4],
-        [1.0, 0.1, 0.3]
-    ])
-    second_deriv = np.array(bspline_curve_d2cdt2_tvec(p, k, t_vec))
     assert second_deriv.shape == (t_vec.shape[0], 3)
 
 

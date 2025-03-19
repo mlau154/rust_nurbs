@@ -3748,6 +3748,29 @@ def bspline_curve_eval(p: Iterable[Iterable[float]], k: Iterable[float], t: floa
         Value of the B-spline curve at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
+def bspline_curve_eval_dp(k: Iterable[float], i: int, q: int, dim: int, t: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the B-spline curve with respect to an individual control point at a given :math:`t`-value
+    
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    t: float
+        Parameter value at which to evaluate the curve sensitivity
+
+    Returns
+    -------
+    List[float]
+        1-D list representing the curve sensitivity at :math:`t` to the control point :math:`\mathbf{P}_i`
+    """
+
 def bspline_curve_dcdt(p: Iterable[Iterable[float]], k: Iterable[float], t: float) -> List[float]:
     r"""
     Evaluates the first derivative with respect to :math:`t` of a B-spline curve with :math:`n+1` 
@@ -3779,6 +3802,29 @@ def bspline_curve_dcdt(p: Iterable[Iterable[float]], k: Iterable[float], t: floa
     -------
     List[float]
         Value of the first derivative w.r.t. :math:`t` of the B-spline curve at :math:`t`. Has the same size as the inner dimension of ``p``
+    """
+
+def bspline_curve_dcdt_dp(k: Iterable[float], i: int, q: int, dim: int, t: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the B-spline curve first derivative with respect to an individual control point
+  
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    t: float
+        Parameter value at which to evaluate the curve derivative sensitivity
+    
+    Returns
+    -------
+    List[float]
+        1-D list representing the curve derivative sensitivity at :math:`t` to the control point :math:`\mathbf{P}_i`
     """
 
 def bspline_curve_d2cdt2(p: Iterable[Iterable[float]], k: Iterable[float], t: float) -> List[float]:
@@ -3814,6 +3860,29 @@ def bspline_curve_d2cdt2(p: Iterable[Iterable[float]], k: Iterable[float], t: fl
         Value of the second derivative w.r.t. :math:`t` of the B-spline curve at :math:`t`. Has the same size as the inner dimension of ``p``
     """
 
+def bspline_curve_d2cdt2_dp(k: Iterable[float], i: int, q: int, dim: int, t: float) -> List[float]:
+    r"""
+    Evaluates the derivative of the Bézier curve second derivative with respect to an individual control point
+
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    t: float
+        Parameter value at which to evaluate the curve derivative sensitivity
+    
+    Returns
+    -------
+    List[float]
+        1-D list representing the curve derivative sensitivity at :math:`t` to the control point :math:`\mathbf{P}_i`
+    """
+
 def bspline_curve_eval_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt: int) -> List[List[float]]:
     r"""
     Evaluates a B-spline curve with :math:`n+1` control points on a 
@@ -3842,6 +3911,32 @@ def bspline_curve_eval_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt
     List[List[float]]
         Value of the B-spline curve at :math:`N_t` linearly-spaced points. Output array has size
         :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bspline_curve_eval_dp_grid(k: Iterable[float], i: int, q: int, dim: int, nt: int) -> List[List[float]]:
+    r"""
+    Evaluates the sensitivity with respect to an individual control point of a B-spline curve with 
+    :math:`n+1` control points at :math:`N_t` linearly-spaced points in :math:`t`
+
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    nt: int
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the control point sensitivity of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve control point sensitivity at :math:`N_t` linearly-spaced points. Output array has size
+        :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``2`` or ``3``)
     """
 
 def bspline_curve_dcdt_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt: int) -> List[List[float]]:
@@ -3879,6 +3974,32 @@ def bspline_curve_dcdt_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt
         :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``3``)
     """
 
+def bspline_curve_dcdt_dp_grid(k: Iterable[float], i: int, q: int, dim: int, nt: int) -> List[List[float]]:
+    r"""
+    Evaluates the sensitivity with respect to an individual control point of a B-spline curve first derivative with 
+    :math:`n+1` control points at :math:`N_t` linearly-spaced points in :math:`t`
+
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    nt: int
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the control point sensitivity of the curve first derivative at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve first derivative control point sensitivity at :math:`N_t` linearly-spaced points. Output array has size
+        :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``2`` or ``3``)
+    """
+
 def bspline_curve_d2cdt2_grid(p: Iterable[Iterable[float]], k: Iterable[float], nt: int) -> List[List[float]]:
     r"""
     Evaluates the second derivative with respect to :math:`t` of a B-spline curve 
@@ -3914,7 +4035,33 @@ def bspline_curve_d2cdt2_grid(p: Iterable[Iterable[float]], k: Iterable[float], 
         :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``3``)
     """
 
-def bspline_curve_eval_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: List[float]) -> List[List[float]]:
+def bspline_curve_d2cdt2_dp_grid(k: Iterable[float], i: int, q: int, dim: int, nt: int) -> List[List[float]]:
+    r"""
+    Evaluates the sensitivity with respect to an individual control point of a B-spline curve second derivative with 
+    :math:`n+1` control points at :math:`N_t` linearly-spaced points in :math:`t`
+
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    nt: int
+        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
+        the control point sensitivity of the curve second derivative at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve second derivative control point sensitivity at :math:`N_t` linearly-spaced points. Output array has size
+        :math:`N_t \times d`, where :math:`d` is the spatial dimension (usually ``2`` or ``3``)
+    """
+
+def bspline_curve_eval_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: Iterable[float]) -> List[List[float]]:
     r"""
     Evaluates a B-spline curve with :math:`n+1` control points on a 
     grid of linearly-spaced :math:`t`-values according to
@@ -3934,8 +4081,7 @@ def bspline_curve_eval_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t:
     k: Iterable[float]
         1-D list or array of knots
     t: Iterable[float]
-        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
-        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+        Vector of parameter values
 
     Returns
     -------
@@ -3944,7 +4090,32 @@ def bspline_curve_eval_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t:
         :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
     """
 
-def bspline_curve_dcdt_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: List[float]) -> List[List[float]]:
+def bspline_curve_eval_dp_tvec(k: Iterable[float], i: int, q: int, dim: int, t: Iterable[float]) -> List[List[float]]:
+    r"""
+    Evaluates the sensitivity with respect to an individual control point of a B-spline curve with 
+    :math:`n+1` control points at :math:`N_t` linearly-spaced points in :math:`t`
+
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    t: Iterable[float]
+        Vector of parameter values
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve control point sensitivity along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``2`` or ``3``)
+    """
+
+def bspline_curve_dcdt_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: Iterable[float]) -> List[List[float]]:
     r"""
     Evaluates the first derivative with respect to :math:`t` of a B-spline curve 
     with :math:`n+1` control points on a grid of linearly-spaced :math:`t`-values according to
@@ -3969,8 +4140,7 @@ def bspline_curve_dcdt_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t:
     k: Iterable[float]
         1-D list or array of knots
     t: Iterable[float]
-        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
-        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+        Vector of parameter values
 
     Returns
     -------
@@ -3979,7 +4149,32 @@ def bspline_curve_dcdt_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t:
         :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
     """
 
-def bspline_curve_d2cdt2_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: List[float]) -> List[List[float]]:
+def bspline_curve_dcdt_dp_tvec(k: Iterable[float], i: int, q: int, dim: int, t: Iterable[float]) -> List[List[float]]:
+    r"""
+    Evaluates the sensitivity with respect to an individual control point of a B-spline curve first derivative with 
+    :math:`n+1` control points at :math:`N_t` linearly-spaced points in :math:`t`
+
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    t: Iterable[float]
+        Vector of parameter values
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve first derivative control point sensitivity along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``2`` or ``3``)
+    """
+
+def bspline_curve_d2cdt2_tvec(p: Iterable[Iterable[float]], k: Iterable[float], t: Iterable[float]) -> List[List[float]]:
     r"""
     Evaluates the second derivative with respect to :math:`t` of a B-spline curve 
     with :math:`n+1` control points on a grid of linearly-spaced :math:`t`-values according to
@@ -4004,14 +4199,38 @@ def bspline_curve_d2cdt2_tvec(p: Iterable[Iterable[float]], k: Iterable[float], 
     k: Iterable[float]
         1-D list or array of knots
     t: Iterable[float]
-        Number of linearly-spaced points in :math:`t`. E.g., ``nt=3`` outputs
-        the evaluation of the curve at :math:`t=0.0`, :math:`t=0.5`, and :math:`t=1.0`.
+        Vector of parameter values
 
     Returns
     -------
     List[List[float]]
         Value of the B-spline curve second derivative w.r.t. :math:`t` along a vector of :math:`t`-values. Output array has size
         :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``3``)
+    """
+
+def bspline_curve_d2cdt2_dp_tvec(k: Iterable[float], i: int, q: int, dim: int, t: Iterable[float]) -> List[List[float]]:
+    r"""
+    Evaluates the sensitivity with respect to an individual control point of a B-spline curve second derivative with 
+    :math:`n+1` control points at :math:`N_t` linearly-spaced points in :math:`t`
+
+    Parameters
+    ----------
+    k: Iterable[float]
+        1-D list or array of knots
+    i: int
+        Index of the control point
+    q: int
+        Degree of the curve
+    dim: int
+        Number of spatial dimensions in the curve. Usually ``2`` or ``3``
+    t: Iterable[float]
+        Vector of parameter values
+
+    Returns
+    -------
+    List[List[float]]
+        Value of the B-spline curve second derivative control point sensitivity along a vector of :math:`t`-values. Output array has size
+        :math:`\text{len}(t) \times d`, where :math:`d` is the spatial dimension (usually ``2`` or ``3``)
     """
 
 def bspline_surf_eval(p: Iterable[Iterable[Iterable[float]]], ku: Iterable[float], kv: Iterable[float], u: float, v: float) -> List[float]:
