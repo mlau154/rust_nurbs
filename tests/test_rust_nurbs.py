@@ -3914,6 +3914,47 @@ def test_nurbs_curve_eval():
     assert len(k) - len(p) - 1 == 5  # Curve degree
 
 
+def test_nurbs_curve_eval_dp():
+    """
+    Evaluates the curve sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    t = 0.7
+    i = 3
+    curve_eval_1 = np.array(nurbs_curve_eval(p, w, k, t))
+    curve_dp_exact = np.array(nurbs_curve_eval_dp(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_eval_2 = np.array(nurbs_curve_eval(p, w, k, t))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_nurbs_curve_dcdt():
     """
     Generates a quarter circle and ensures that the slope is correct at several points
@@ -3969,6 +4010,47 @@ def test_nurbs_curve_dcdt():
     first_deriv = np.array(nurbs_curve_dcdt(p, w, k, t))
     assert first_deriv.shape == (2,)
     assert np.isclose(first_deriv[1] / first_deriv[0], -curve_point[0] / curve_point[1])
+
+
+def test_nurbs_curve_dcdt_dp():
+    """
+    Evaluates the curve first derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    t = 0.7
+    i = 3
+    curve_dcdt_1 = np.array(nurbs_curve_dcdt(p, w, k, t))
+    curve_dp_exact = np.array(nurbs_curve_dcdt_dp(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_dcdt_2 = np.array(nurbs_curve_dcdt(p, w, k, t))
+    curve_dp_approx = (curve_dcdt_2 - curve_dcdt_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_nurbs_curve_d2cdt2():
@@ -4031,6 +4113,48 @@ def test_nurbs_curve_d2cdt2():
     kappa = abs(first_deriv[0] * second_deriv[1] - first_deriv[1] * second_deriv[0]) / (first_deriv[0]**2 + first_deriv[1]**2) ** 1.5
     assert np.isclose(kappa, 1.0)
 
+
+def test_nurbs_curve_d2cdt2_dp():
+    """
+    Evaluates the curve second derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    t = 0.7
+    i = 3
+    curve_d2cdt2_1 = np.array(nurbs_curve_d2cdt2(p, w, k, t))
+    curve_dp_exact = np.array(nurbs_curve_d2cdt2_dp(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-8
+    p[i, :] += step
+    curve_d2cdt2_2 = np.array(nurbs_curve_d2cdt2(p, w, k, t))
+    curve_dp_approx = (curve_d2cdt2_2 - curve_d2cdt2_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_nurbs_curve_eval_grid():
     """
     Evaluates sample 2-D and 3-D NURBS curves along a grid with 50 :math:`t`-values and ensures
@@ -4063,6 +4187,47 @@ def test_nurbs_curve_eval_grid():
     ])
     curve_point = np.array(nurbs_curve_eval_grid(p, w, k, 50))
     assert curve_point.shape == (50, 3)
+
+
+def test_nurbs_curve_eval_dp_grid():
+    """
+    Evaluates the curve sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    nt = 100
+    i = 3
+    curve_eval_1 = np.array(nurbs_curve_eval_grid(p, w, k, nt))
+    curve_dp_exact = np.array(nurbs_curve_eval_dp_grid(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-6
+    p[i, :] += step
+    curve_eval_2 = np.array(nurbs_curve_eval_grid(p, w, k, nt))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_nurbs_curve_dcdt_grid():
@@ -4099,6 +4264,47 @@ def test_nurbs_curve_dcdt_grid():
     assert first_deriv.shape == (50, 3)
 
 
+def test_nurbs_curve_dcdt_dp_grid():
+    """
+    Evaluates the curve first derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    nt = 100
+    i = 3
+    curve_dcdt_1 = np.array(nurbs_curve_dcdt_grid(p, w, k, nt))
+    curve_dp_exact = np.array(nurbs_curve_dcdt_dp_grid(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-6
+    p[i, :] += step
+    curve_dcdt_2 = np.array(nurbs_curve_dcdt_grid(p, w, k, nt))
+    curve_dp_approx = (curve_dcdt_2 - curve_dcdt_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_nurbs_curve_d2cdt2_grid():
     """
     Evaluates sample 2-D and 3-D NURBS curve second derivatives along a grid with 50 :math:`t`-values and ensures
@@ -4131,6 +4337,47 @@ def test_nurbs_curve_d2cdt2_grid():
     ])
     second_deriv = np.array(nurbs_curve_d2cdt2_grid(p, w, k, 50))
     assert second_deriv.shape == (50, 3)
+
+
+def test_nurbs_curve_d2cdt2_dp_grid():
+    """
+    Evaluates the curve second derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    nt = 100
+    i = 3
+    curve_d2cdt2_1 = np.array(nurbs_curve_d2cdt2_grid(p, w, k, nt))
+    curve_dp_exact = np.array(nurbs_curve_d2cdt2_dp_grid(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], nt))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-5
+    p[i, :] += step
+    curve_d2cdt2_2 = np.array(nurbs_curve_d2cdt2_grid(p, w, k, nt))
+    curve_dp_approx = (curve_d2cdt2_2 - curve_d2cdt2_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_nurbs_curve_eval_tvec():
@@ -4168,6 +4415,47 @@ def test_nurbs_curve_eval_tvec():
     assert curve_point.shape == (t_vec.shape[0], 3)
 
 
+def test_nurbs_curve_eval_dp_tvec():
+    """
+    Evaluates the curve sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 3
+    curve_eval_1 = np.array(nurbs_curve_eval_tvec(p, w, k, t_vec))
+    curve_dp_exact = np.array(nurbs_curve_eval_dp_tvec(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-6
+    p[i, :] += step
+    curve_eval_2 = np.array(nurbs_curve_eval_tvec(p, w, k, t_vec))
+    curve_dp_approx = (curve_eval_2 - curve_eval_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_nurbs_curve_dcdt_tvec():
     """
     Evaluates sample 2-D and 3-D NURBS curve first derivatives along a vector of 50 :math:`t`-values and ensures
@@ -4203,6 +4491,47 @@ def test_nurbs_curve_dcdt_tvec():
     assert first_deriv.shape == (t_vec.shape[0], 3)
 
 
+def test_nurbs_curve_dcdt_dp_tvec():
+    """
+    Evaluates the curve first derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 3
+    curve_dcdt_1 = np.array(nurbs_curve_dcdt_tvec(p, w, k, t_vec))
+    curve_dp_exact = np.array(nurbs_curve_dcdt_dp_tvec(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-6
+    p[i, :] += step
+    curve_dcdt_2 = np.array(nurbs_curve_dcdt_tvec(p, w, k, t_vec))
+    curve_dp_approx = (curve_dcdt_2 - curve_dcdt_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
+
+
 def test_nurbs_curve_d2cdt2_tvec():
     """
     Evaluates sample 2-D and 3-D NURBS curve second derivatives along a vector of 50 :math:`t`-values and ensures
@@ -4236,6 +4565,47 @@ def test_nurbs_curve_d2cdt2_tvec():
     ])
     second_deriv = np.array(nurbs_curve_d2cdt2_tvec(p, w, k, t_vec))
     assert second_deriv.shape == (t_vec.shape[0], 3)
+
+
+def test_nurbs_curve_d2cdt2_dp_tvec():
+    """
+    Evaluates the curve second derivative sensitivity with respect to a given control point location and ensures
+    that it is correct by comparing it with the finite difference equivalent.
+    """
+    p = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 0.1, 0.3],
+        [0.2, 0.1, 0.7],
+        [0.4, 0.2, 0.6],
+        [0.6, 0.1, 0.4],
+        [0.8, 0.0, 0.2],
+        [0.7, 0.2, 0.3],
+        [1.0, 0.3, 0.6],
+        [1.1, 0.2, 0.3]
+    ])
+    w = np.array([
+        1.0,
+        0.9,
+        0.4,
+        0.5,
+        1.2,
+        1.0,
+        1.1,
+        1.0,
+        1.0
+    ])
+    k = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.3, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    t_vec = np.array([0.0, 0.1, 0.3, 0.7, 0.9, 1.0])
+    i = 3
+    curve_d2cdt2_1 = np.array(nurbs_curve_d2cdt2_tvec(p, w, k, t_vec))
+    curve_dp_exact = np.array(nurbs_curve_d2cdt2_dp_tvec(w, k, i, k.shape[0] - p.shape[0] - 1, p.shape[1], t_vec))
+
+    # Update the value of the control point matrix at i=i
+    step = 1e-5
+    p[i, :] += step
+    curve_d2cdt2_2 = np.array(nurbs_curve_d2cdt2_tvec(p, w, k, t_vec))
+    curve_dp_approx = (curve_d2cdt2_2 - curve_d2cdt2_1) / step
+    assert np.all(np.isclose(curve_dp_exact, curve_dp_approx))
 
 
 def test_nurbs_surf_eval():
